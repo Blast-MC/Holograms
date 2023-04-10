@@ -176,7 +176,7 @@ public interface Hologram {
 	/**
 	 * Sets the lines for this hologram from basic objects<br>
 	 * Accepts a list of String, BlockData, ItemStack, or {@link tech.blastmc.holograms.api.models.line.Offset Offsets}
-	 * @param lines
+	 * @param lines The objects in order from top to bottom
 	 */
 	void setLines(List<Object> lines);
 
