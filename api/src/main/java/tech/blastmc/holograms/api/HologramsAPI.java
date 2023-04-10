@@ -8,8 +8,6 @@ import java.util.List;
 
 /**
  * TODO:
- *  - Javadoc
- *      - TextLine
  *  - Powerups
  */
 public abstract class HologramsAPI {
