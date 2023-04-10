@@ -10,7 +10,6 @@ import java.util.List;
  * TODO:
  *  - Javadoc
  *      - TextLine
- *      - HologramBuilder
  *  - Powerups
  */
 public abstract class HologramsAPI {

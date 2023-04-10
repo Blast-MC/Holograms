@@ -1,10 +1,12 @@
 package tech.blastmc.holograms.models;
 
+import gg.projecteden.commands.exceptions.postconfigured.InvalidInputException;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Display.Billboard;
 import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.bukkit.entity.TextDisplay.TextAligment;
+import tech.blastmc.holograms.api.HologramsAPI;
 import tech.blastmc.holograms.api.models.Hologram;
 import tech.blastmc.holograms.api.models.HologramBuilder;
 
@@ -81,12 +83,6 @@ public class HologramBuilderImpl implements HologramBuilder {
 	}
 
 	@Override
-	public HologramBuilder background(Color background) {
-		this.background = background;
-		return this;
-	}
-
-	@Override
 	public HologramBuilder opacity(Byte opacity) {
 		this.opacity = opacity;
 		return this;
@@ -117,14 +113,14 @@ public class HologramBuilderImpl implements HologramBuilder {
 	}
 
 	@Override
-	public HologramBuilderImpl shadow(float radius, float strength) {
+	public HologramBuilderImpl shadow(Float radius, Float strength) {
 		this.shadowRadius = radius;
 		this.shadowStrength = strength;
 		return this;
 	}
 
 	@Override
-	public HologramBuilderImpl brightness(int blockLight, int skyLight) {
+	public HologramBuilderImpl brightness(Integer blockLight, Integer skyLight) {
 		this.blockLight = blockLight;
 		this.skyLight = skyLight;
 		return this;
@@ -133,6 +129,12 @@ public class HologramBuilderImpl implements HologramBuilder {
 	@Override
 	public HologramBuilderImpl lines(Object... lines) {
 		this.lines = Arrays.asList(lines);
+		return this;
+	}
+
+	@Override
+	public HologramBuilder background(Color background) {
+		this.background = background;
 		return this;
 	}
 
@@ -162,6 +164,14 @@ public class HologramBuilderImpl implements HologramBuilder {
 
 	@Override
 	public Hologram build() {
+		if (location == null)
+			throw new InvalidInputException("Location must not be null");
+		if (id != null) {
+			Hologram idHolo = HologramsAPI.byId(location.getWorld(), id);
+			if (idHolo != null)
+				throw new InvalidInputException("IDs must be unique per world");
+		}
+
 		HologramImpl holo = new HologramImpl(id, location, persistent, range, shadowRadius, shadowStrength, billboard, glowColor, blockLight, skyLight, null, lineWidth, background, opacity, shadowed, seeThrough, alignment, withMirror, itemTransform,  new HashMap<>());
 		holo.setLines(lines);
 		if (holo.isPersistent())
