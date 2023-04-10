@@ -5,6 +5,7 @@ import tech.blastmc.holograms.Database;
 import tech.blastmc.holograms.api.HologramsAPI;
 import tech.blastmc.holograms.api.models.Hologram;
 import tech.blastmc.holograms.api.models.HologramBuilder;
+import tech.blastmc.holograms.api.models.PowerUp;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,4 +33,8 @@ public class HologramAPIImpl extends HologramsAPI {
 			.map(holo -> (Hologram) holo).toList();
 	}
 
+	@Override
+	protected PowerUp powerupImpl() {
+		return new PowerUpImpl();
+	}
 }

@@ -3,12 +3,12 @@ package tech.blastmc.holograms.api;
 import org.bukkit.World;
 import tech.blastmc.holograms.api.models.Hologram;
 import tech.blastmc.holograms.api.models.HologramBuilder;
+import tech.blastmc.holograms.api.models.PowerUp;
 
 import java.util.List;
 
 /**
- * TODO:
- *  - Powerups
+ * A class for interfacing with the Holograms plugin
  */
 public abstract class HologramsAPI {
 
@@ -41,10 +41,20 @@ public abstract class HologramsAPI {
 		return HologramsAPI.instance.byIdImpl(world, id);
 	}
 
+	/**
+	 * Creates a {@link PowerUp PowerUp} instance that can be modified and spawned
+	 * @return A new instance of PowerUp
+	 */
+	public static PowerUp powerup() {
+		return HologramsAPI.instance.powerupImpl();
+	}
+
 	protected abstract Hologram byIdImpl(World world, String id);
 
 	protected abstract HologramBuilder builderImpl();
 
 	protected abstract List<Hologram> getHologramsImpl(World world);
+
+	protected abstract PowerUp powerupImpl();
 
 }
