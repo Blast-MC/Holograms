@@ -39,11 +39,12 @@ public class Database {
 
 	@SneakyThrows
 	public static void save(HologramImpl hologram) {
-		if (!hologram.isPersistent() || StringUtils.isNullOrEmpty(hologram.getId()))
-			return;
 		String world = hologram.getLocation().getWorld().getName().toLowerCase().replace(" ", "_");
 		worldsMap.putIfAbsent(world, new HashSet<>());
 		worldsMap.get(world).add(hologram);
+
+		if (!hologram.isPersistent() || StringUtils.isNullOrEmpty(hologram.getId()))
+			return;
 		File file = getFile(world, true);
 		YamlConfiguration config = loadConfig(file);
 		config.set(hologram.getId(), hologram);
