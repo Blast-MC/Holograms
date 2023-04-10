@@ -18,7 +18,7 @@ public interface TextLine extends HologramLine {
 
 	/**
 	 * Sets the text of this line<br>
-	 * Use of & and &# is supported here
+	 * Use of chat colors and hex is supported here
 	 * @param text The pre-colored text of this line
 	 */
 	void setText(String text);
