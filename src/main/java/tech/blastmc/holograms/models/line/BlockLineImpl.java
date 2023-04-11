@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Data
-@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @SerializableAs("BlockLine")
 public class BlockLineImpl extends HologramLineImpl implements ConfigurationSerializable, BlockLine {

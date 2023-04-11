@@ -11,6 +11,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Display.Billboard;
 import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay.TextAligment;
 import org.jetbrains.annotations.NotNull;
 import tech.blastmc.holograms.api.models.line.HologramLine;
@@ -18,9 +19,10 @@ import tech.blastmc.holograms.models.HologramImpl;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @Data
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 public abstract class HologramLineImpl implements HologramLine {
 
@@ -34,6 +36,8 @@ public abstract class HologramLineImpl implements HologramLine {
 	private Color glowColor;
 	private Integer blockLight;
 	private Integer skyLight;
+
+	private Consumer<Player> onClick;
 
 	public abstract Display render(Location location);
 
@@ -86,6 +90,11 @@ public abstract class HologramLineImpl implements HologramLine {
 	public void setBrightness(Integer blockLight, Integer skyLight) {
 		this.blockLight = blockLight;
 		this.skyLight = skyLight;
+	}
+
+	@Override
+	public void setClickListener(Consumer clickListener) {
+		this.onClick = clickListener;
 	}
 
 	public abstract void applyTypeDefaults(Object... objects);

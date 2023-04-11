@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 /**
  * An interface which executes code when a player is near a hologram
  */
-public interface PowerUp {
+public interface PowerUp extends Hologram {
 
 	/**
 	 * Sets the location of this power up<br>
@@ -32,7 +32,7 @@ public interface PowerUp {
 	 * @param lines The lines, from top to bottom
 	 * @return The Power up instance
 	 */
-	PowerUp lines(String... lines);
+	PowerUp title(String... lines);
 
 	/**
 	 * What should happen when a player pickups the Power up
@@ -49,45 +49,16 @@ public interface PowerUp {
 	PowerUp pickupRange(float range);
 
 	/**
-	 * Spawns the Power up at the location with the lines and item, if not null
-	 */
-	void spawn();
-
-	/**
-	 * Removes the hologram from the world
-	 */
-	void remove();
-
-	/**
-	 * Gets the location this hologram is at
-	 * @return The location of the hologram
-	 */
-	Location getLocation();
-
-	/**
 	 * Gets the item rendered for this power up
 	 * @return The ItemStack used to render
 	 */
 	ItemStack getItem();
 
-	/**
-	 * The String lines of this power up.<br>
-	 * Remove and Spawn must be called if changed for changes to update
-	 * @return The pre-colored lines of the hologram
-	 */
-	List<String> getLines();
 
 	/**
 	 * Gets the range at which a player can pick up the power up
 	 * @return The block distance away from the power up
 	 */
 	float getPickupRange();
-
-	/**
-	 * Gets the hologram that represets this power up in the world.<br>
-	 * If spawn has not been called, this value will be null.
-	 * @return The hologram instance, or null
-	 */
-	Hologram getHologram();
 
 }

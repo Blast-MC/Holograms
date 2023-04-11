@@ -59,7 +59,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	@Setter
 	private String id;
 	@Getter
-	private Location location;
+	protected Location location;
 	@Getter
 	@Setter
 	private boolean persistent = false;
@@ -333,8 +333,9 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 		return y;
 	}
 
-	public void setLines(List<Object> lines) {
+	public List<HologramLine> setLines(List<Object> lines) {
 		this.lines = convert(lines);
+		return this.lines;
 	}
 
 	public void setLinesRaw(List<HologramLine> lines) {
@@ -342,30 +343,37 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	}
 
 	@Override
-	public void setLine(int index, Object line) {
+	public HologramLine setLine(int index, Object line) {
 		if (line instanceof String str && lines.get(index) instanceof TextLineImpl text) {
 			((TextDisplay) text.getDisplay()).setText(PacketUtils.toNMS(str));
 			if (text.getMirror() != null)
 				((TextDisplay) text.getMirror()).setText(PacketUtils.toNMS(str));
 			text.setText(str);
 			updateBasics();
+			return text;
 		}
 		else {
-			lines.set(index, convert(line));
+			HologramLine holoLine = convert(line);
+			lines.set(index, holoLine);
 			update();
+			return holoLine;
 		}
 	}
 
 	@Override
-	public void addLine(Object line) {
-		lines.add(convert(line));
+	public HologramLine addLine(Object line) {
+		HologramLine holoLine = convert(line);
+		lines.add(holoLine);
 		update();
+		return holoLine;
 	}
 
 	@Override
-	public void addLine(int index, Object line) {
-		lines.add(index, convert(line));
+	public HologramLine addLine(int index, Object line) {
+		HologramLine holoLine = convert(line);
+		lines.add(index, holoLine);
 		update();
+		return holoLine;
 	}
 
 	@Override

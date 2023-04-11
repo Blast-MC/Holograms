@@ -177,29 +177,33 @@ public interface Hologram {
 	 * Sets the lines for this hologram from basic objects<br>
 	 * Accepts a list of String, BlockData, ItemStack, or {@link tech.blastmc.holograms.api.models.line.Offset Offsets}
 	 * @param lines The objects in order from top to bottom
+	 * @return The lines converted to their Hologram wrappers
 	 */
-	void setLines(List<Object> lines);
+	List<HologramLine> setLines(List<Object> lines);
 
 	/**
 	 * Sets the line of this hologram from basic object
 	 * @param index The index of the line to replace
 	 * @param line The object to create a line from<br>
 	 * Accepts a String, BlockData, ItemStack, or an {@link tech.blastmc.holograms.api.models.line.Offset Offset}
+	 * @return The line converted to its Hologram wrappers
 	 */
-	void setLine(int index, Object line);
+	HologramLine setLine(int index, Object line);
 
 	/**
 	 * Adds a line from basic object to the bottom of this hologram
 	 * @param line Accepts a String, BlockData, ItemStack, or an {@link tech.blastmc.holograms.api.models.line.Offset Offset}
+	 * @return The line converted to its Hologram wrappers
 	 */
-	void addLine(Object line);
+	HologramLine addLine(Object line);
 
 	/**
 	 * Adds a line at the specified index from a basic object to this hologram
 	 * @param index The index of the line to insert at
 	 * @param line Accepts a String, BlockData, ItemStack, or an {@link tech.blastmc.holograms.api.models.line.Offset Offset}
+	 * @return The line converted to its Hologram wrappers
 	 */
-	void addLine(int index, Object line);
+	HologramLine addLine(int index, Object line);
 
 	/**
 	 * Removes a line from the hologram

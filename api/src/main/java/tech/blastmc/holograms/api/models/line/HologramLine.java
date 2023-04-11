@@ -2,7 +2,10 @@ package tech.blastmc.holograms.api.models.line;
 
 import org.bukkit.Color;
 import org.bukkit.entity.Display.Billboard;
+import org.bukkit.entity.Player;
 import tech.blastmc.holograms.api.models.Hologram;
+
+import java.util.function.Consumer;
 
 /**
  * An interface for each line of a {@link Hologram Hologram}. This can control many general stats per line.<br>
@@ -86,4 +89,11 @@ public interface HologramLine<T> {
 	 * @param skyLight An integer between 0 and 15 (inclusive), or null to reset to the hologram's default
 	 */
 	void setBrightness(Integer blockLight, Integer skyLight);
+
+	/**
+	 * Sets what will happen when a player clicks this line
+	 * @param clickListener The action on click to trigger
+	 */
+	void setClickListener(Consumer<Player> clickListener);
+
 }

@@ -10,6 +10,7 @@ import tech.blastmc.holograms.api.models.Hologram;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * An instance of {@link HologramLine HologramLine} that adds spacing between the lines adjacent to it<br>
@@ -91,4 +92,9 @@ public class Offset implements HologramLine, ConfigurationSerializable {
 
 	@Override
 	public void setBrightness(Integer blockLight, Integer skyLight) { }
+
+	@Override
+	public void setClickListener(Consumer clickListener) {
+
+	}
 }
