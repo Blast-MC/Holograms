@@ -6,6 +6,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.network.syncher.SynchedEntityData.DataValue;
 import net.minecraft.world.entity.Display;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -45,7 +46,7 @@ public class PacketUtils {
 	}
 
 	@SneakyThrows
-	public static List<DataValue<?>> packAll(Display display) {
+	public static List<DataValue<?>> packAll(Entity display) {
 		final SynchedEntityData entityData = display.getEntityData();
 		final Method packAll = entityData.getClass().getDeclaredMethod("packAll");
 		packAll.setAccessible(true);

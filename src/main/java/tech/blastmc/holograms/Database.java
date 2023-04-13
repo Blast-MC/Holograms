@@ -1,5 +1,6 @@
 package tech.blastmc.holograms;
 
+import joptsimple.internal.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.World;
@@ -77,6 +78,10 @@ public class Database {
 	public static void remove(HologramImpl hologram) {
 		String world = hologram.getLocation().getWorld().getName().toLowerCase().replace(" ", "_");
 		worldsMap.getOrDefault(world, new HashSet<>()).remove(hologram);
+
+		if (Strings.isNullOrEmpty(hologram.getId()))
+			return;
+
 		File file = getFile(world, true);
 		YamlConfiguration config = loadConfig(file);
 		config.set(hologram.getId(), null);

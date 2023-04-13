@@ -7,6 +7,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Display.BillboardConstraints;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Interaction;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Display.Billboard;
@@ -38,6 +40,7 @@ public abstract class HologramLineImpl implements HologramLine {
 	private Integer skyLight;
 
 	private Consumer<Player> onClick;
+	private Entity interactEntity;
 
 	public abstract Display render(Location location);
 
@@ -95,6 +98,7 @@ public abstract class HologramLineImpl implements HologramLine {
 	@Override
 	public void setClickListener(Consumer clickListener) {
 		this.onClick = clickListener;
+		getHologram().update();
 	}
 
 	public abstract void applyTypeDefaults(Object... objects);

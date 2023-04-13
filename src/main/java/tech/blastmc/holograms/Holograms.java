@@ -20,7 +20,6 @@ import tech.blastmc.holograms.utils.protocol.ProtocolManager;
 
 /**
  * TODO
- *  - Power ups
  *  - Scale
  */
 public final class Holograms extends JavaPlugin implements Listener {
@@ -43,6 +42,7 @@ public final class Holograms extends JavaPlugin implements Listener {
         new HologramAPIImpl();
 
 		new Reflections("tech.blastmc.holograms").getTypesAnnotatedWith(SerializableAs.class).forEach(clazz -> {
+			if (!clazz.isAnnotationPresent(SerializableAs.class)) return;
 			String alias = clazz.getAnnotation(SerializableAs.class).value();
 			ConfigurationSerialization.registerClass((Class<? extends ConfigurationSerializable>) clazz, alias);
 		});

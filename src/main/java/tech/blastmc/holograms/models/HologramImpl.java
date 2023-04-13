@@ -14,6 +14,9 @@ import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Display.BlockDisplay;
 import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Display.TextDisplay;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.phys.AABB;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -78,7 +81,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	@Getter
 	private Integer skyLight;
 	@Getter
-	private List<HologramLine> lines;
+	protected List<HologramLine> lines;
 	@Getter
 	private Integer lineWidth = 9999;
 	@Getter
@@ -223,6 +226,14 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 				}
 				holoLine.applyDefaults(range, billboard, glowColor, itemTransform, lineWidth, background, opacity, shadowed, seeThrough, alignment, mirror);
 
+				if (holoLine.getOnClick() != null) {
+					ArmorStand armorStand = new ArmorStand(EntityType.ARMOR_STAND, PacketUtils.toNMS(loc.getWorld()));
+					armorStand.setPos(PacketUtils.toNMS(loc));
+					armorStand.setInvisible(true);
+					armorStand.setBoundingBox(AABB.ofSize(PacketUtils.toNMS(loc), 0.25, 0.25, 0.25));
+					holoLine.setInteractEntity(armorStand);
+				}
+
 				loc.add(0, getYAdditional(holoLine), 0);
 			}
 			else
@@ -280,6 +291,11 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 				PacketUtils.send(player, mirrorPacket);
 			}
 		}
+
+		if (line.getInteractEntity() != null) {
+			ClientboundAddEntityPacket interactPacket = new ClientboundAddEntityPacket(line.getInteractEntity());
+			PacketUtils.send(player, interactPacket);
+		}
 	}
 
 	public void sendMetaPacket(Player player, HologramLineImpl line, Display display) {
@@ -293,6 +309,11 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 		ClientboundSetEntityDataPacket dataPacket = new ClientboundSetEntityDataPacket(line.getDisplay().getId(), PacketUtils.packAll(line.getDisplay()));
 		PacketUtils.send(player, dataPacket);
 		setDisplayData(display, original);
+
+		if (line.getInteractEntity() != null) {
+			ClientboundSetEntityDataPacket interactPacket = new ClientboundSetEntityDataPacket(line.getInteractEntity().getId(), PacketUtils.packAll(line.getInteractEntity()));
+			PacketUtils.send(player, interactPacket);
+		}
 
 		if (line instanceof TextLineImpl text)
 			if (text.getMirror() != null) {
@@ -344,6 +365,8 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 
 	@Override
 	public HologramLine setLine(int index, Object line) {
+		if (lines == null)
+			lines = new ArrayList<>();
 		if (line instanceof String str && lines.get(index) instanceof TextLineImpl text) {
 			((TextDisplay) text.getDisplay()).setText(PacketUtils.toNMS(str));
 			if (text.getMirror() != null)
@@ -362,6 +385,8 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 
 	@Override
 	public HologramLine addLine(Object line) {
+		if (lines == null)
+			lines = new ArrayList<>();
 		HologramLine holoLine = convert(line);
 		lines.add(holoLine);
 		update();
@@ -370,6 +395,8 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 
 	@Override
 	public HologramLine addLine(int index, Object line) {
+		if (lines == null)
+			lines = new ArrayList<>();
 		HologramLine holoLine = convert(line);
 		lines.add(index, holoLine);
 		update();
@@ -378,6 +405,8 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 
 	@Override
 	public void removeLine(int index) {
+		if (lines == null)
+			lines = new ArrayList<>();
 		despawn();
 		lines.remove(index);
 		spawn();
@@ -483,6 +512,12 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 						PacketUtils.send(player, mirror);
 					}
 				}
+			}
+
+			if (line.getInteractEntity() != null) {
+				ClientboundRemoveEntitiesPacket interact = new ClientboundRemoveEntitiesPacket(line.getInteractEntity().getId());
+				for (Player player : Bukkit.getOnlinePlayers())
+					PacketUtils.send(player, interact);
 			}
 		});
 	}

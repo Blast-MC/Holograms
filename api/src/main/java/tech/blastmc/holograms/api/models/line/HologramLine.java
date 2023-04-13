@@ -91,7 +91,8 @@ public interface HologramLine<T> {
 	void setBrightness(Integer blockLight, Integer skyLight);
 
 	/**
-	 * Sets what will happen when a player clicks this line
+	 * Sets what will happen when a player clicks this line<br>
+	 * This is not persistent and must be set each time
 	 * @param clickListener The action on click to trigger
 	 */
 	void setClickListener(Consumer<Player> clickListener);

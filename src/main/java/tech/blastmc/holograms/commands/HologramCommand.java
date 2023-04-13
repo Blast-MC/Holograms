@@ -11,6 +11,7 @@ import gg.projecteden.commands.models.annotations.Switch;
 import gg.projecteden.commands.models.annotations.TabCompleterFor;
 import gg.projecteden.commands.models.events.CommandEvent;
 import gg.projecteden.commands.util.JsonBuilder;
+import gg.projecteden.commands.util.Tasks;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,7 +23,9 @@ import org.bukkit.entity.TextDisplay.TextAligment;
 import org.bukkit.inventory.ItemStack;
 import tech.blastmc.holograms.api.HologramsAPI;
 import tech.blastmc.holograms.api.models.Hologram;
+import tech.blastmc.holograms.api.models.PowerUp;
 import tech.blastmc.holograms.api.models.line.HologramLine;
+import tech.blastmc.holograms.api.models.line.ItemLine;
 import tech.blastmc.holograms.api.models.line.Offset;
 import tech.blastmc.holograms.commands.edit.EditPage.Page;
 import tech.blastmc.holograms.commands.edit.GlobalPage.GlobalSetting;
@@ -120,6 +123,13 @@ public class HologramCommand extends CustomCommand {
 		hologram.save();
 		if (gui)
 			Page.LOCATION.open(player(), hologram, 0);
+	}
+
+	@Path("test")
+	void test() {
+		Hologram hologram = HologramsAPI.byId(world(), "test2");
+		ItemLine itemLine = (ItemLine) hologram.getLines().get(1);
+		itemLine.setClickListener(player -> ((Player) player).sendMessage("hi"));
 	}
 
 	@TabCompleterFor(Hologram.class)
