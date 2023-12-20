@@ -5,7 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.network.syncher.SynchedEntityData.DataValue;
-import net.minecraft.world.entity.Display;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -14,12 +14,8 @@ import net.minecraft.world.phys.Vec3;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R3.block.data.CraftBlockData;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_19_R3.util.CraftChatMessage;
 import org.bukkit.entity.Player;
+import tech.blastmc.holograms.utils.protocol.Reflection;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -29,12 +25,17 @@ import static tech.blastmc.holograms.utils.StringUtils.colorize;
 public class PacketUtils {
 
 	public static Level toNMS(World world) {
-		return ((CraftWorld) world).getHandle();
+		Object craftWorld = Reflection.getCraftBukkitClass("CraftWorld").cast(world);
+		Reflection.MethodInvoker method = Reflection.getMethod("{obc}.CraftWorld", "getHandle");
+
+		return (Level) method.invoke(craftWorld);
 	}
 
-
 	public static BlockState toNMS(BlockData blockData) {
-		return ((CraftBlockData) blockData).getState();
+		Object craftBlockData = Reflection.getClass("{obc}.block.data.CraftBlockData").cast(blockData);
+		Reflection.MethodInvoker method = Reflection.getMethod("{obc}.block.data.CraftBlockData", "getState");
+
+		return (BlockState) method.invoke(craftBlockData);
 	}
 
 	public static Vec3 toNMS(Location location) {
@@ -42,7 +43,8 @@ public class PacketUtils {
 	}
 
 	public static ItemStack toNMS(org.bukkit.inventory.ItemStack item) {
-		return CraftItemStack.asNMSCopy(item);
+		Reflection.MethodInvoker method = Reflection.getMethod("{obc}.inventory.CraftItemStack", "asNMSCopy", org.bukkit.inventory.ItemStack.class);
+		return (ItemStack) method.invoke(null, item);
 	}
 
 	@SneakyThrows
@@ -54,12 +56,19 @@ public class PacketUtils {
 	}
 
 	public static Component toNMS(String text) {
-		return CraftChatMessage.fromString(colorize(text), true)[0];
+		Class<?> clazz = Reflection.getClass("{obc}.util.CraftChatMessage");
+		Reflection.MethodInvoker method = Reflection.getTypedMethod(clazz, "fromStringOrNull", Component.class, String.class);
+		return ((Component) method.invoke(null, colorize(text)));
 	}
 
 	public static void send(Player player, Packet... packets) {
+		Object craftPlayer = Reflection.getClass("{obc}.entity.CraftPlayer").cast(player);
+		Reflection.MethodInvoker method = Reflection.getMethod("{obc}.entity.CraftPlayer", "getHandle");
+
+		ServerPlayer serverPlayer = (ServerPlayer) method.invoke(craftPlayer);
+
 		for (Packet packet : packets)
-			((CraftPlayer) player).getHandle().connection.send(packet);
+			serverPlayer.connection.send(packet);
 	}
 
 }

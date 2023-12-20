@@ -1,7 +1,7 @@
 package tech.blastmc.holograms.api.models.line;
 
 import org.bukkit.Color;
-import org.bukkit.entity.TextDisplay.TextAligment;
+import org.bukkit.entity.TextDisplay.TextAlignment;
 import tech.blastmc.holograms.api.models.Hologram;
 
 /**
@@ -89,13 +89,13 @@ public interface TextLine extends HologramLine {
 	 * Gets the alignment rule for this line
 	 * @return The alignment rule, or null for default
 	 */
-	TextAligment getAlignment();
+	TextAlignment getAlignment();
 
 	/**
 	 * Sets the alignment rule of this line
 	 * @param alignment The alignment rule, or null to reset to default
 	 */
-	void setAlignment(TextAligment alignment);
+	void setAlignment(TextAlignment alignment);
 
 	/**
 	 * If this line has a mirror line and will show on both sides.<br>

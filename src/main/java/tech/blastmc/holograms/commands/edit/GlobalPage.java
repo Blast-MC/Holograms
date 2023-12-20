@@ -11,7 +11,8 @@ import org.bukkit.Color;
 import org.bukkit.entity.Display.Billboard;
 import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TextDisplay.TextAligment;
+import org.bukkit.entity.TextDisplay.TextAlignment;
+import tech.blastmc.holograms.Holograms;
 import tech.blastmc.holograms.api.models.Hologram;
 import tech.blastmc.holograms.api.models.line.HologramLine;
 import tech.blastmc.holograms.models.line.ItemLineImpl;
@@ -34,14 +35,14 @@ public class GlobalPage extends EditPage {
 		addBackButton(json, Page.MAIN, 0);
 
 		json.next("   &6&lGlobal Settings");
-		json.newline(true)
-			.newline(true)
+		json.group().next("\n")
+			.group().next("\n")
 			.next("        &3Location")
 			.hover("&eModify location")
 			.command("hologram shift " + hologram.getId() + " --gui");
 
 		for (GlobalSetting setting : GlobalSetting.values()) {
-			json.newline(true)
+			json.group().next("\n")
 				.next("&f" + Strings.repeat(" ", setting.spacing))
 				.next("&3" + StringUtils.camelCase(setting.name()));
 			if (setting.type.isEnum())
@@ -241,16 +242,16 @@ public class GlobalPage extends EditPage {
 				return get(line.getHologram());
 			}
 		},
-		TEXT_ALIGNMENT(5, TextAligment.class) {
+		TEXT_ALIGNMENT(5, TextAlignment.class) {
 			@Override
 			public void apply(Hologram hologram, Object data) {
-				hologram.setAlignment((TextAligment) data);
+				hologram.setAlignment((TextAlignment) data);
 			}
 
 			@Override
 			public void apply(HologramLine line, Object data) {
 				if (line instanceof TextLineImpl text) {
-					text.setAlignment((TextAligment) data);
+					text.setAlignment((TextAlignment) data);
 					line.getHologram().update();
 				}
 			}
@@ -394,11 +395,21 @@ public class GlobalPage extends EditPage {
 			if (data == null || data.isEmpty() || data.isBlank()) {
 				SignInputGUI.of("", "▲▲▲▲▲▲▲", "Input Value", getName())
 					.onFinish((p, lines) -> {
+						Holograms.log("Finish Book GUI");
 						if (Strings.isNullOrEmpty(lines[0])) {
 							future.complete(null);
 							return;
 						}
-						future.complete(convertForType(getType(), lines[0]));
+
+						try {
+							future.complete(convertForType(getType(), lines[0]));
+						} catch (Exception ex) {
+							player.sendMessage(
+								new JsonBuilder(gg.projecteden.commands.util.StringUtils.getPrefix("Holograms"))
+									.next("&c" + ex.getMessage())
+							);
+							future.complete(null);
+						}
 						Tasks.wait(1, () -> Page.LINE.open(player, hologram, index));
 					})
 					.open(player);

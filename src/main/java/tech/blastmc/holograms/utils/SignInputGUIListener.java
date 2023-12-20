@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundOpenSignEditorPacket;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -42,6 +43,7 @@ public class SignInputGUIListener extends PacketListener implements Listener {
 		if (gui.onFinish != null)
 			gui.onFinish.accept(sender, linesAccessor.get(packet));
 
+		sender.sendBlockChange(map.get(sender.getUniqueId()).location, Material.AIR.createBlockData());
 		map.remove(sender.getUniqueId());
 
 		super.onReceive(sender, packet);
@@ -57,6 +59,7 @@ public class SignInputGUIListener extends PacketListener implements Listener {
 
 		private String[] lines;
 		private BiConsumer<Player, String[]> onFinish;
+		private Location location;
 
 		private SignInputGUI(String[] lines) {
 			this.lines = lines;
@@ -78,16 +81,13 @@ public class SignInputGUIListener extends PacketListener implements Listener {
 		public void open(Player player) {
 			SignInputGUIListener.map.put(player.getUniqueId(), this);
 
-			Location loc = player.getLocation().toBlockLocation().clone().add(0, 20, 0);
-				while (loc.getBlock().getType() != Material.AIR)
-					loc.subtract(0, 1, 0);
+			Location loc = player.getLocation().toBlockLocation().clone();
+			this.location = loc;
 			player.sendBlockChange(loc, Material.OAK_SIGN.createBlockData());
 			player.sendSignChange(loc, lines);
 
-			ClientboundOpenSignEditorPacket openPacket = new ClientboundOpenSignEditorPacket(new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+			ClientboundOpenSignEditorPacket openPacket = new ClientboundOpenSignEditorPacket(new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), true);
 			PacketUtils.send(player, openPacket);
-
-			player.sendBlockChange(loc, Material.AIR.createBlockData());
 		}
 
 	}

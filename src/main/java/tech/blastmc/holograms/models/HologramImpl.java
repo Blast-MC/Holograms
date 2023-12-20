@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Display.TextDisplay;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.phys.AABB;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -26,7 +27,7 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Display.Billboard;
 import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TextDisplay.TextAligment;
+import org.bukkit.entity.TextDisplay.TextAlignment;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import tech.blastmc.holograms.Database;
@@ -93,7 +94,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	@Getter
 	private Boolean seeThrough = false;
 	@Getter
-	private TextAligment alignment = TextAligment.CENTER;
+	private TextAlignment alignment = TextAlignment.CENTER;
 	@Getter
 	private Boolean mirror;
 	@Getter
@@ -128,7 +129,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 		if (map.containsKey("seeThrough"))
 			this.seeThrough = (boolean) map.get("seeThrough");
 		if (map.containsKey("alignment"))
-			this.alignment = TextAligment.valueOf(map.get("alignment").toString());
+			this.alignment = TextAlignment.valueOf(map.get("alignment").toString());
 		if (map.containsKey("withMirror"))
 			this.mirror = (Boolean) map.get("withMirror");
 		if (map.containsKey("itemTransform"))
@@ -227,11 +228,11 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 				holoLine.applyDefaults(range, billboard, glowColor, itemTransform, lineWidth, background, opacity, shadowed, seeThrough, alignment, mirror);
 
 				if (holoLine.getOnClick() != null) {
-					ArmorStand armorStand = new ArmorStand(EntityType.ARMOR_STAND, PacketUtils.toNMS(loc.getWorld()));
-					armorStand.setPos(PacketUtils.toNMS(loc));
-					armorStand.setInvisible(true);
-					armorStand.setBoundingBox(AABB.ofSize(PacketUtils.toNMS(loc), 0.25, 0.25, 0.25));
-					holoLine.setInteractEntity(armorStand);
+					Slime slime = new Slime(EntityType.SLIME, PacketUtils.toNMS(loc.getWorld()));
+					slime.setPos(PacketUtils.toNMS(loc));
+					slime.setInvisible(true);
+					slime.setSize(1, true);
+					holoLine.setInteractEntity(slime);
 				}
 
 				loc.add(0, getYAdditional(holoLine), 0);
@@ -377,8 +378,9 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 		}
 		else {
 			HologramLine holoLine = convert(line);
+			despawn();
 			lines.set(index, holoLine);
-			update();
+			spawn();
 			return holoLine;
 		}
 	}
@@ -451,7 +453,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	}
 
 	@Override
-	public void setAlignment(TextAligment alignment) {
+	public void setAlignment(TextAlignment alignment) {
 		this.alignment = alignment;
 		update();
 	}
@@ -500,26 +502,30 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 		if (lines == null)
 			return;
 		lines.stream().filter(Objects::nonNull).filter(line -> !(line instanceof Offset)).map(line -> (HologramLineImpl) line).forEach(line -> {
-			if (line.getDisplay() == null) return;
-			ClientboundRemoveEntitiesPacket packet = new ClientboundRemoveEntitiesPacket(line.getDisplay().getId());
-			for (Player player : Bukkit.getOnlinePlayers()) {
-				PacketUtils.send(player, packet);
-			}
-			if (line instanceof TextLineImpl text) {
-				if (text.getMirror() != null) {
-					ClientboundRemoveEntitiesPacket mirror = new ClientboundRemoveEntitiesPacket(text.getMirror().getId());
-					for (Player player : Bukkit.getOnlinePlayers()) {
-						PacketUtils.send(player, mirror);
-					}
+			despawn(line);
+		});
+	}
+
+	public void despawn(HologramLineImpl line) {
+		if (line.getDisplay() == null) return;
+		ClientboundRemoveEntitiesPacket packet = new ClientboundRemoveEntitiesPacket(line.getDisplay().getId());
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			PacketUtils.send(player, packet);
+		}
+		if (line instanceof TextLineImpl text) {
+			if (text.getMirror() != null) {
+				ClientboundRemoveEntitiesPacket mirror = new ClientboundRemoveEntitiesPacket(text.getMirror().getId());
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					PacketUtils.send(player, mirror);
 				}
 			}
+		}
 
-			if (line.getInteractEntity() != null) {
-				ClientboundRemoveEntitiesPacket interact = new ClientboundRemoveEntitiesPacket(line.getInteractEntity().getId());
-				for (Player player : Bukkit.getOnlinePlayers())
-					PacketUtils.send(player, interact);
-			}
-		});
+		if (line.getInteractEntity() != null) {
+			ClientboundRemoveEntitiesPacket interact = new ClientboundRemoveEntitiesPacket(line.getInteractEntity().getId());
+			for (Player player : Bukkit.getOnlinePlayers())
+				PacketUtils.send(player, interact);
+		}
 	}
 
 	@Override

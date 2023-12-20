@@ -4,11 +4,7 @@ import de.tr7zw.changeme.nbtapi.NBTContainer;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import gg.projecteden.commands.exceptions.postconfigured.InvalidInputException;
 import gg.projecteden.commands.models.CustomCommand;
-import gg.projecteden.commands.models.annotations.Arg;
-import gg.projecteden.commands.models.annotations.ConverterFor;
-import gg.projecteden.commands.models.annotations.Path;
-import gg.projecteden.commands.models.annotations.Switch;
-import gg.projecteden.commands.models.annotations.TabCompleterFor;
+import gg.projecteden.commands.models.annotations.*;
 import gg.projecteden.commands.models.events.CommandEvent;
 import gg.projecteden.commands.util.JsonBuilder;
 import gg.projecteden.commands.util.Tasks;
@@ -16,11 +12,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Display.Billboard;
 import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TextDisplay.TextAligment;
+import org.bukkit.entity.TextDisplay.TextAlignment;
 import org.bukkit.inventory.ItemStack;
+import tech.blastmc.holograms.Holograms;
 import tech.blastmc.holograms.api.HologramsAPI;
 import tech.blastmc.holograms.api.models.Hologram;
 import tech.blastmc.holograms.api.models.PowerUp;
@@ -47,29 +45,33 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
+@Permission("holograms")
 public class HologramCommand extends CustomCommand {
 
 	public HologramCommand(CommandEvent event) {
 		super(event);
 	}
 
+	@Permission("create")
 	@Path("create <name>")
 	void create(String name) {
 		new HologramBuilderImpl()
 			.id(name)
 			.persistent(true)
 			.location(location())
-			.lines("")
+			.lines(name)
 			.spawn();
 		send(PREFIX + "Successfully created a new hologram at your location"); // TODO - prompt edit
 	}
 
+	@Permission("delete")
 	@Path("(delete|remove|del) <hologram>")
 	void delete(Hologram hologram) {
 		hologram.remove();
 		send(PREFIX + "Removed hologram &e" + hologram.getId());
 	}
 
+	@Permission("list")
 	@Path("list [world] [page] [--range]")
 	void list(@Arg("current") World world, @Arg("1") int page, double range) {
 		send(PREFIX + "Holograms for world &e" + world.getName());
@@ -86,11 +88,13 @@ public class HologramCommand extends CustomCommand {
 		paginate(holograms, formatter, "hologram list " + world.getName(), page);
 	}
 
+	@Permission("teleportTo")
 	@Path("teleportTo <hologram>")
 	void teleportTo(Hologram hologram) {
 		player().teleport(hologram.getLocation());
 	}
 
+	@Permission("edit")
 	@Path("edit <hologram> [action] [context] [extra] [extra] [extra] [--nogui]")
 	void editAction(Hologram hologram, @Arg("gui") EditActions action,
 	                @Arg(context = 2, tabCompleter = HologramData.class) String context,
@@ -105,12 +109,14 @@ public class HologramCommand extends CustomCommand {
 		action.execute(hologram, player(), data, nogui);
 	}
 
+	@Permission("moveHere")
 	@Path("moveHere <hologram>")
 	void moveHere(Hologram hologram) {
 		hologram.setLocation(location());
 		hologram.save();
 	}
 
+	@Permission("shift")
 	@Path("shift <hologram> [--x] [--y] [--z] [--gui]")
 	void shift(Hologram hologram, @Switch double x, @Switch double y, @Switch double z, @Switch boolean gui) {
 		if (x == 0 && y == 0 && z == 0) {
@@ -123,13 +129,6 @@ public class HologramCommand extends CustomCommand {
 		hologram.save();
 		if (gui)
 			Page.LOCATION.open(player(), hologram, 0);
-	}
-
-	@Path("test")
-	void test() {
-		Hologram hologram = HologramsAPI.byId(world(), "test2");
-		ItemLine itemLine = (ItemLine) hologram.getLines().get(1);
-		itemLine.setClickListener(player -> ((Player) player).sendMessage("hi"));
 	}
 
 	@TabCompleterFor(Hologram.class)
@@ -216,13 +215,13 @@ public class HologramCommand extends CustomCommand {
 				data = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length)) : "";
 				if (data.isEmpty() || data.isBlank()) {
 					String type = "";
-					if (hologram.getLines().get(0) instanceof TextLineImpl)
+					if (hologram.getLines().get(line) instanceof TextLineImpl)
 						type = "text ";
-					if (hologram.getLines().get(0) instanceof ItemLineImpl)
+					if (hologram.getLines().get(line) instanceof ItemLineImpl)
 						type = "item ";
-					if (hologram.getLines().get(0) instanceof BlockLineImpl)
+					if (hologram.getLines().get(line) instanceof BlockLineImpl)
 						type = "block ";
-					if (hologram.getLines().get(0) instanceof Offset)
+					if (hologram.getLines().get(line) instanceof Offset)
 						type = "offset ";
 					player.sendMessage(new JsonBuilder(StringUtils.getPrefix("Hologram") + "&e&lClick Here &3to edit the line")
 						                   .hover("&eEdit Line " + line)
@@ -277,15 +276,19 @@ public class HologramCommand extends CustomCommand {
 			@Override
 			public void execute(Hologram hologram, Player player, String data, boolean nogui) {
 				String[] args = data.split(" ");
-				data = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length)) : "";
+				data = args.length >= 2 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : "";
+
 				Integer line = null;
 				try {
 					line = Integer.parseInt(args[0]);
 				} catch (Exception ignore) { }
 				if (line == null)
 					throw new InvalidInputException("You must specify a line index");
-				if (data.isEmpty() || data.isBlank())
+
+				if (data.isEmpty() || data.isBlank()){
 					Page.LINE.open(player, hologram, line);
+				}
+
 				else {
 					LineSetting setting;
 					try {
@@ -297,7 +300,9 @@ public class HologramCommand extends CustomCommand {
 					}
 					Integer finalLine = line;
 					LineSetting finalSetting = setting;
+
 					setting.process(player, hologram, data, line).thenAccept(obj -> {
+						if (obj == null) return;
 						finalSetting.apply(hologram.getLines().get(finalLine), obj);
 						hologram.save();
 					});
@@ -352,8 +357,10 @@ public class HologramCommand extends CustomCommand {
 			switch (type.toLowerCase()) {
 				case "text" -> completable.complete(data);
 				case "block" -> {
-					if (data.isEmpty())
+					if (data.isEmpty()) {
 						completable.complete(Material.STONE.createBlockData());
+						break;
+					}
 					try {
 						completable.complete(Bukkit.createBlockData(data));
 					} catch (Exception ex) {
@@ -361,8 +368,10 @@ public class HologramCommand extends CustomCommand {
 					}
 				}
 				case "item" -> {
-					if (data.isEmpty())
+					if (data.isEmpty()) {
 						completable.complete(new ItemStack(Material.GRASS_BLOCK));
+						break;
+					}
 					try {
 						String mat = data.split(" ")[0].replace("minecraft:", "").toUpperCase();
 						Material material = Material.valueOf(mat);
@@ -438,7 +447,7 @@ public class HologramCommand extends CustomCommand {
 			case "item" -> Arrays.stream(Material.values()).filter(Material::isItem).map(_enum -> _enum.name().toLowerCase()).filter(x -> x.startsWith(filter)).forEach(list::add);
 			case "offset" -> list.addAll(Arrays.asList(".1", ".5", "1"));
 			case "billboard" -> list.addAll(tabCompleteEnum(filter, Billboard.class));
-			case "text_alignment" -> list.addAll(tabCompleteEnum(filter, TextAligment.class));
+			case "text_alignment" -> list.addAll(tabCompleteEnum(filter, TextAlignment.class));
 			case "item_transform" -> list.addAll(tabCompleteEnum(filter, ItemDisplayTransform.class));
 			case "mirror" -> list.addAll(Arrays.asList("true", "false"));
 		}
@@ -452,14 +461,10 @@ public class HologramCommand extends CustomCommand {
 					list.addAll(tabCompleteEnum(filter, TextSetting.class));
 					if ("text_alignment".startsWith(filter))
 						list.add("text_alignment");
-
 				}
 				if (hologramLine instanceof ItemLineImpl)
 					if ("item_transform".startsWith(filter))
 						list.add("item_transform");
-				if (hologramLine instanceof BlockLineImpl) {
-					// TODO
-				}
 				Arrays.stream(GlobalSetting.values())
 					.filter(setting -> setting != GlobalSetting.TEXT_ALIGNMENT && setting != GlobalSetting.ITEM_TRANSFORM)
 					.map(_enum -> _enum.name().toLowerCase())
@@ -476,9 +481,15 @@ public class HologramCommand extends CustomCommand {
 			case "item" -> Arrays.stream(Material.values()).filter(Material::isItem).map(_enum -> _enum.name().toLowerCase()).filter(x -> x.startsWith(filter)).forEach(list::add);
 			case "offset" -> list.addAll(Arrays.asList(".1", ".5", "1"));
 			case "billboard" -> list.addAll(tabCompleteEnum(filter, Billboard.class));
-			case "text_alignment" -> list.addAll(tabCompleteEnum(filter, TextAligment.class));
+			case "text_alignment" -> list.addAll(tabCompleteEnum(filter, TextAlignment.class));
 			case "item_transform" -> list.addAll(tabCompleteEnum(filter, ItemDisplayTransform.class));
 			case "mirror" -> list.addAll(Arrays.asList("true", "false"));
+		}
+		if (arg(4).equalsIgnoreCase("block")) {
+			// TODO - block data tab completer?
+		}
+		if (arg(4).equalsIgnoreCase("item")) {
+			// TODO - item tab completer?
 		}
 		return list;
 	}

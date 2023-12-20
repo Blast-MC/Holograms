@@ -55,7 +55,7 @@ public class Database {
 	private static File getFile(String name, boolean forWrite) {
 		File file = Holograms.getInstance().getDataFolder().toPath().resolve("database/" + name + ".yml").toFile();
 		if (!file.getParentFile().exists() && forWrite)
-			file.mkdirs();
+			file.getParentFile().mkdirs();
 		if (!file.exists()) {
 			if (forWrite) {
 				try {

@@ -104,7 +104,7 @@ public class ItemLineImpl extends HologramLineImpl implements ConfigurationSeria
 	}
 
 	@Override
-	public JsonBuilder renderHover(String color) {
+	public JsonBuilder renderHover(String color, int index) {
 		return new JsonBuilder(color + "Item").hover(item);
 	}
 

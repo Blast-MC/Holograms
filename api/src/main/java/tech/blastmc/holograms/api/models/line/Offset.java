@@ -5,6 +5,7 @@ import org.bukkit.Color;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Display.Billboard;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import tech.blastmc.holograms.api.models.Hologram;
 

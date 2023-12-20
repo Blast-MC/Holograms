@@ -27,7 +27,7 @@ subprojects {
     apply(plugin = "maven-publish")
 
     dependencies {
-        compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
+        compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     }
 
     java {
@@ -40,7 +40,7 @@ dependencies {
     implementation("gg.projecteden:commands-api:1.0.0-SNAPSHOT")
     implementation("org.reflections:reflections:0.9.11")
     implementation("de.tr7zw:item-nbt-api:2.11.2")
-    paperweightDevBundle("io.papermc.paper", "1.19.4-R0.1-SNAPSHOT")
+    paperweightDevBundle("io.papermc.paper", "1.20.4-R0.1-SNAPSHOT")
 }
 
 tasks {

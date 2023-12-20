@@ -19,11 +19,11 @@ public class LocationPage extends EditPage{
 		JsonBuilder json = new JsonBuilder();
 		addBackButton(json, Page.GLOBAL, 0);
 
-		json.newline(true)
+		json.group().next("\n")
 			.next("       &6&lLocation")
 			.hover("&e" + StringUtils.getShortLocationString(hologram.getLocation()))
-			.newline(true)
-			.newline(true);
+			.group().next("\n")
+			.group().next("\n");
 
 		for (String coord : Arrays.asList("x", "y", "z")) {
 			json.next("     ")
@@ -51,8 +51,8 @@ public class LocationPage extends EditPage{
 				.next("&3>>")
 				.hover("&eMove by 1 full block")
 				.command("hologram shift " + hologram.getId() + " --" + coord + "=1 --gui")
-				.newline(true)
-				.newline(true);
+				.group().next("\n")
+				.group().next("\n");
 		}
 
 		json.next("    ")

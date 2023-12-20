@@ -4,7 +4,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Display.Billboard;
 import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
-import org.bukkit.entity.TextDisplay.TextAligment;
+import org.bukkit.entity.TextDisplay.TextAlignment;
 
 import java.util.List;
 
@@ -103,7 +103,7 @@ public interface HologramBuilder {
 	 * @param alignment The alignment rule of text lines
 	 * @return The HologramBuilder instance
 	 */
-	HologramBuilder alignment(TextAligment alignment);
+	HologramBuilder alignment(TextAlignment alignment);
 
 	/**
 	 * Sets how item lines will be rendered in this hologram<br>

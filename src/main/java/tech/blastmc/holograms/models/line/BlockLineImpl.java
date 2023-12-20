@@ -1,5 +1,6 @@
 package tech.blastmc.holograms.models.line;
 
+import com.google.common.base.Strings;
 import com.mojang.math.Transformation;
 import gg.projecteden.commands.util.JsonBuilder;
 import lombok.Data;
@@ -80,7 +81,21 @@ public class BlockLineImpl extends HologramLineImpl implements ConfigurationSeri
 	public void applyTypeDefaults(Object... objects) { }
 
 	@Override
-	public JsonBuilder renderHover(String color) {
-		return new JsonBuilder(color + "Block").hover(StringUtils.camelCase(blockData.getMaterial().toString()));
+	public JsonBuilder renderHover(String color, int index) {
+		JsonBuilder json = new JsonBuilder();
+		String hover = "&e" + this.getBlockData().getAsString(true)
+			.replace("{", "{\n&e")
+			.replace("}", "\n}\n&e")
+			.replace("[", "\n[\n&e")
+			.replace(",", ",\n&e")
+			.replace("]", "\n]\n&e");
+
+		json.next(color + "Block")
+			.hover(hover);
+
+		if (index >= 0)
+			json.command("hologram edit " + this.getHologram().getId() + " set " + index + " block");
+
+		return json.group();
 	}
 }

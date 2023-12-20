@@ -10,11 +10,12 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
-import org.bukkit.entity.TextDisplay.TextAligment;
+import org.bukkit.entity.TextDisplay.TextAlignment;
 import org.jetbrains.annotations.NotNull;
 import tech.blastmc.holograms.api.models.line.TextLine;
 import tech.blastmc.holograms.models.HologramImpl;
 import tech.blastmc.holograms.utils.PacketUtils;
+import tech.blastmc.holograms.utils.protocol.Reflection;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -24,18 +25,18 @@ import java.util.Map;
 public class TextLineImpl extends HologramLineImpl implements ConfigurationSerializable, TextLine {
 
 	@NonNull
-	private String text;
+	private String text = "Text Line";
 	private Integer lineWidth;
 	private Color background;
 	private Byte opacity;
 	private Boolean shadowed;
 	private Boolean seeThrough;
-	private TextAligment alignment;
+	private TextAlignment alignment;
 	private Boolean withMirror;
 
 	private Display mirror;
 
-	public TextLineImpl(HologramImpl hologram, @NonNull String text, Integer lineWidth, Color background, Byte opacity, Boolean shadowed, Boolean seeThrough, TextAligment alignment, Boolean withMirror) {
+	public TextLineImpl(HologramImpl hologram, @NonNull String text, Integer lineWidth, Color background, Byte opacity, Boolean shadowed, Boolean seeThrough, TextAlignment alignment, Boolean withMirror) {
 		super(hologram);
 		this.text = text;
 		this.lineWidth = lineWidth;
@@ -61,7 +62,7 @@ public class TextLineImpl extends HologramLineImpl implements ConfigurationSeria
 		if (map.containsKey("seeThrough"))
 			this.seeThrough = (boolean) map.get("seeThrough");
 		if (map.containsKey("alignment"))
-			this.alignment = TextAligment.valueOf(map.get("alignment").toString());
+			this.alignment = TextAlignment.valueOf(map.get("alignment").toString());
 		if (map.containsKey("withMirror"))
 			this.withMirror = (boolean) map.get("withMirror");
 	}
@@ -101,10 +102,14 @@ public class TextLineImpl extends HologramLineImpl implements ConfigurationSeria
 	public Display render(Location location) {
 		TextDisplay display = new TextDisplay(EntityType.TEXT_DISPLAY, PacketUtils.toNMS(location.getWorld()));
 		display.setText(PacketUtils.toNMS(text));
-		if (lineWidth != null)
-			display.setLineWidth(lineWidth);
-		if (background != null)
-			display.setBackgroundColor(background.asARGB());
+		if (lineWidth != null) {
+			Reflection.MethodInvoker method = Reflection.getMethod(Display.TextDisplay.class, "b", int.class);
+			method.invoke(display, lineWidth.intValue());
+		}
+		if (background != null) {
+			Reflection.MethodInvoker method = Reflection.getMethod(Display.TextDisplay.class, "c", int.class);
+			method.invoke(display, background.asARGB());
+		}
 		if (opacity != null)
 			display.setTextOpacity(opacity);
 		if (shadowed != null)
@@ -143,10 +148,14 @@ public class TextLineImpl extends HologramLineImpl implements ConfigurationSeria
 
 	private void applyDefaultsToDisplay(Display display, Object... objects) {
 		TextDisplay text = (TextDisplay) display;
-		if (objects[0] != null)
-			text.setLineWidth((Integer) objects[0]);
-		if (objects[1] != null)
-			text.setBackgroundColor(((Color) objects[1]).asARGB());
+		if (objects[0] != null) {
+			Reflection.MethodInvoker method = Reflection.getMethod(TextDisplay.class, "b", int.class);
+			method.invoke(display, ((Integer) objects[0]).intValue());
+		}
+		if (objects[1] != null && background != null) {
+			Reflection.MethodInvoker method = Reflection.getMethod(Display.TextDisplay.class, "c",  int.class);
+			method.invoke(display, ((Color) objects[1]).asARGB());
+		}
 		if (objects[2] != null)
 			text.setTextOpacity((Byte) objects[2]);
 		if (objects[3] != null)
@@ -154,7 +163,7 @@ public class TextLineImpl extends HologramLineImpl implements ConfigurationSeria
 		if (objects[4] != null)
 			text.setSharedFlag(TextDisplay.FLAG_SEE_THROUGH, (Boolean) objects[4]);
 		if (objects[5] != null)
-			switch ((TextAligment) objects[5]) {
+			switch ((TextAlignment) objects[5]) {
 				case LEFT -> {
 					text.setSharedFlag(TextDisplay.FLAG_ALIGN_LEFT, true);
 					text.setSharedFlag(TextDisplay.FLAG_ALIGN_RIGHT, false);
@@ -171,7 +180,7 @@ public class TextLineImpl extends HologramLineImpl implements ConfigurationSeria
 	}
 
 	@Override
-	public JsonBuilder renderHover(String color) {
+	public JsonBuilder renderHover(String color, int index) {
 		return new JsonBuilder(color + "Text").hover(text);
 	}
 

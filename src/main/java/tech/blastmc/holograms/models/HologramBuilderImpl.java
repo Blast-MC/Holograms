@@ -5,7 +5,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Display.Billboard;
 import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
-import org.bukkit.entity.TextDisplay.TextAligment;
+import org.bukkit.entity.TextDisplay.TextAlignment;
 import tech.blastmc.holograms.api.HologramsAPI;
 import tech.blastmc.holograms.api.models.Hologram;
 import tech.blastmc.holograms.api.models.HologramBuilder;
@@ -30,7 +30,7 @@ public class HologramBuilderImpl implements HologramBuilder {
 	private Byte opacity;
 	private Boolean shadowed = false;
 	private Boolean seeThrough = false;
-	private TextAligment alignment = TextAligment.CENTER;
+	private TextAlignment alignment = TextAlignment.CENTER;
 	private Boolean withMirror;
 	private ItemDisplayTransform itemTransform = ItemDisplayTransform.GROUND;
 
@@ -101,7 +101,7 @@ public class HologramBuilderImpl implements HologramBuilder {
 	}
 
 	@Override
-	public HologramBuilder alignment(TextAligment alignment) {
+	public HologramBuilder alignment(TextAlignment alignment) {
 		this.alignment = alignment;
 		return this;
 	}

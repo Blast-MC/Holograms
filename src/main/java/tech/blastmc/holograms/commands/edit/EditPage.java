@@ -18,7 +18,7 @@ public abstract class EditPage {
 		json.next("&c<-- Back")
 			.hover("&eGo to the previous page")
 			.command("hologram edit " + hologram.getId() + " gui " + page.name().toLowerCase() + " " + index)
-			.newline(true);
+			.group().next("\n");
 	}
 
 	protected abstract Book.Builder render(Book.Builder book);

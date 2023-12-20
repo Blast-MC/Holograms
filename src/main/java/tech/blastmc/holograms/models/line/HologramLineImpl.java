@@ -8,13 +8,12 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Display.BillboardConstraints;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Interaction;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Display.Billboard;
 import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TextDisplay.TextAligment;
+import org.bukkit.entity.TextDisplay.TextAlignment;
 import org.jetbrains.annotations.NotNull;
 import tech.blastmc.holograms.api.models.line.HologramLine;
 import tech.blastmc.holograms.models.HologramImpl;
@@ -74,7 +73,7 @@ public abstract class HologramLineImpl implements HologramLine {
 
 	public void applyDefaults(Float range, Billboard billboard, Color glowColor, ItemDisplayTransform itemTransform,
 	                          Integer lineWidth, Color background, Byte opacity, Boolean shadowed, Boolean seeThrough,
-	                          TextAligment alignment, Boolean mirror) {
+	                          TextAlignment alignment, Boolean mirror) {
 
 		if (range != null)
 			getDisplay().setViewRange(range);
@@ -103,6 +102,6 @@ public abstract class HologramLineImpl implements HologramLine {
 
 	public abstract void applyTypeDefaults(Object... objects);
 
-	public abstract JsonBuilder renderHover(String color);
+	public abstract JsonBuilder renderHover(String color, int index);
 
 }

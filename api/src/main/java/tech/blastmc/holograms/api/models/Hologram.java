@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Display.Billboard;
 import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TextDisplay.TextAligment;
+import org.bukkit.entity.TextDisplay.TextAlignment;
 import tech.blastmc.holograms.api.models.line.HologramLine;
 
 import java.util.List;
@@ -132,13 +132,13 @@ public interface Hologram {
 	 * Sets how text lines will wrap when past their maximum length
 	 * @param alignment The alignment type for text lines
 	 */
-	void setAlignment(TextAligment alignment);
+	void setAlignment(TextAlignment alignment);
 
 	/**
 	 * Gets the alignment of text lines when they are past their maximum length
 	 * @return The text alignment of text lines
 	 */
-	TextAligment getAlignment();
+	TextAlignment getAlignment();
 
 	/**
 	 * Sets if this hologram has mirrored text lines that render on both sides or one.<br>

@@ -1,7 +1,12 @@
 package tech.blastmc.holograms.commands.edit;
 
 import com.google.common.base.Strings;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import gg.projecteden.commands.util.JsonBuilder;
+import gg.projecteden.commands.util.SerializationUtils;
 import lombok.Getter;
 import lombok.NonNull;
 import net.kyori.adventure.inventory.Book.Builder;
@@ -45,8 +50,8 @@ public class LinePage extends EditPage {
 		json.group()
 			.next("&6&lLine " + (index + 1))
 			.group()
-			.newline(true)
-			.newline(true);
+			.group().next("\n")
+			.group().next("\n");
 
 		HologramLine line = hologram.getLines().get(index);
 
@@ -63,19 +68,19 @@ public class LinePage extends EditPage {
 		if (line instanceof ItemLineImpl || line instanceof TextLineImpl)
 			json.next("          ");
 
-		json.next(((HologramLineImpl) line).renderHover("&3"))
+		json.next(((HologramLineImpl) line).renderHover("&3", index))
 			.command("hologram edit " + hologram.getId() + " set " + index) // Suggest doesn't work, this will prompt // TODO
 			.group();
 
-		json.newline(true)
-			.newline(true)
+		json.group().next("\n")
+			.group().next("\n")
 			.next("       ")
 			.next("&6&lSettings")
-			.newline(true);
+			.group().next("\n");
 
 		if (line instanceof TextLineImpl) {
 			for (TextSetting setting : TextSetting.values()) {
-				json.newline(true)
+				json.group().next("\n")
 					.next("&f" + Strings.repeat(" ", setting.spacing))
 					.next("&3" + StringUtils.camelCase(setting.name()));
 				if (setting.type.isEnum())
@@ -89,44 +94,34 @@ public class LinePage extends EditPage {
 					.group();
 			}
 			GlobalSetting alignment = GlobalSetting.TEXT_ALIGNMENT;
-			json.newline(true)
+			json.group().next("\n").group()
 				.next("&f" + Strings.repeat(" ", alignment.spacing))
 				.next("&3" + StringUtils.camelCase(alignment.name()))
 				.hover("&3Current Value: &e" + StringUtils.camelCase(((Enum) alignment.get(line)).name()))
 				.command("hologram edit " + hologram.getId() + " line " + index + " " + alignment.name().toLowerCase() + " next")
 				.group();
 
-			GlobalSetting mirror = GlobalSetting.TEXT_ALIGNMENT;
-			json.newline(true)
-				.next("&f" + Strings.repeat(" ", mirror.spacing))
-				.next("&3" + StringUtils.camelCase(mirror.name()))
-				.hover("&3Current Value: &e" + StringUtils.camelCase(((Enum) mirror.get(line)).name()))
-				.command("hologram edit " + hologram.getId() + " line " + index + " " + mirror.name().toLowerCase() + " next")
-				.group();
 		}
 		if (line instanceof ItemLineImpl) {
 			GlobalSetting setting = GlobalSetting.ITEM_TRANSFORM;
-			json.newline(true)
+			json.group().next("\n").group()
 				.next("&f" + Strings.repeat(" ", setting.spacing))
 				.next("&3" + StringUtils.camelCase(setting.name()))
 				.hover("&3Current Value: &e" + StringUtils.camelCase(((Enum) setting.get(line)).name()))
 				.command("hologram edit " + hologram.getId() + " line " + index + " " + setting.name().toLowerCase() + " next")
 				.group();
 		}
-		if (line instanceof BlockLineImpl) {
-			// TODO blockdata? do I even want to try?
-		}
 
 		book.addPage(json.build());
 		json = new JsonBuilder();
 
-		json.newline(true)
+		json.group().next("\n")
 			.next("      &6&lOverrides")
-			.newline(true);
+			.group().next("\n");
 
 		for (GlobalSetting setting : GlobalSetting.values()) {
 			if (Arrays.asList(GlobalSetting.TEXT_ALIGNMENT, GlobalSetting.ITEM_TRANSFORM, GlobalSetting.MIRROR, GlobalSetting.BLOCK_LIGHT, GlobalSetting.SKY_LIGHT).contains(setting)) continue;
-			json.newline(true)
+			json.group().next("\n")
 				.next("&f" + Strings.repeat(" ", setting.spacing))
 				.next("&3" + StringUtils.camelCase(setting.name()));
 			if (setting.type.isEnum())

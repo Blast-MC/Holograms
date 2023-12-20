@@ -17,22 +17,21 @@ public class MainPage extends EditPage {
 	@Override
 	protected Builder render(Builder book) {
 		JsonBuilder json = new JsonBuilder()
-					.next("    &6&lEdit Hologram")
+					.next("    &6&lEdit Hologram\n")
 					.hover("&e" + hologram.getId())
 					.group()
-					.newline(true)
-					.newline(true)
-					.next(" &3&l[ Global Settings ]")
+					.next("\n")
+					.next(" &3&l[ Global Settings ]\n")
 					.hover("&eClick to edit settings for all lines")
 					.command("hologram edit " + hologram.getId() + " global")
 					.group()
-					.newline(true)
+					.next("\n")
 					.group()
-					.next("     &3&l[ Add Line ]")
+					.next("     &3&l[ Add Line ]\n")
 					.hover("&eClick to add a line")
 					.command("hologram edit " + hologram.getId() + " add")
 					.group()
-					.newline(true)
+					.next("\n")
 					.group();
 
 		int index = 0;
@@ -73,9 +72,10 @@ public class MainPage extends EditPage {
 			if (line instanceof Offset offset)
 				json.next("Offset").hover("&e" + offset.getValue());
 			else
-				json.next(((HologramLineImpl) line).renderHover("&0"));
+				json.next(((HologramLineImpl) line).renderHover("&0", -1));
+
 			json.command("hologram edit " + hologram.getId() + " line " + index);
-			json.newline(true);
+			json.group().next("\n").group();
 
 			if (index == 10) {
 				book.addPage(json.build());
