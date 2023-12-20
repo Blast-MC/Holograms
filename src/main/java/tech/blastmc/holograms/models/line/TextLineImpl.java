@@ -2,6 +2,7 @@ package tech.blastmc.holograms.models.line;
 
 import gg.projecteden.commands.util.JsonBuilder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Display.TextDisplay;
@@ -20,6 +21,7 @@ import tech.blastmc.holograms.utils.protocol.Reflection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @SerializableAs("TextLine")
 public class TextLineImpl extends HologramLineImpl implements ConfigurationSerializable, TextLine {

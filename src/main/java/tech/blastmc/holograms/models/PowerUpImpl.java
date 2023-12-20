@@ -1,6 +1,7 @@
 package tech.blastmc.holograms.models;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
@@ -12,12 +13,14 @@ import org.bukkit.inventory.ItemStack;
 import tech.blastmc.holograms.Holograms;
 import tech.blastmc.holograms.api.models.PowerUp;
 import tech.blastmc.holograms.api.models.line.Offset;
+import tech.blastmc.holograms.utils.LocationWrapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @SerializableAs("PowerUp")
 public class PowerUpImpl extends HologramImpl implements PowerUp, Listener {
@@ -29,7 +32,7 @@ public class PowerUpImpl extends HologramImpl implements PowerUp, Listener {
 
 	@Override
 	public PowerUp location(Location location) {
-		this.location = location;
+		this.location = new LocationWrapper(location);
 		return this;
 	}
 
@@ -81,8 +84,8 @@ public class PowerUpImpl extends HologramImpl implements PowerUp, Listener {
 	@EventHandler
 	public void onMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
-		if (!player.getWorld().equals(this.location.getWorld())) return;
-		if (player.getLocation().distanceSquared(this.location) > pickupRange) return;
+		if (!player.getWorld().getName().equalsIgnoreCase(this.location.getWorld())) return;
+		if (player.getLocation().distanceSquared(this.location.toLocation()) > pickupRange) return;
 
 		remove();
 		this.onPickup.accept(player);

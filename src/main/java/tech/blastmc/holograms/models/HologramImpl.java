@@ -1,6 +1,7 @@
 package tech.blastmc.holograms.models;
 
 import com.mojang.math.Transformation;
+import gg.projecteden.commands.exceptions.postconfigured.InvalidInputException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,7 @@ import org.bukkit.entity.TextDisplay.TextAlignment;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import tech.blastmc.holograms.Database;
+import tech.blastmc.holograms.Holograms;
 import tech.blastmc.holograms.api.events.HologramLineSpawnEvent;
 import tech.blastmc.holograms.api.events.HologramSpawnEvent;
 import tech.blastmc.holograms.api.models.Hologram;
@@ -41,6 +43,7 @@ import tech.blastmc.holograms.models.line.BlockLineImpl;
 import tech.blastmc.holograms.models.line.HologramLineImpl;
 import tech.blastmc.holograms.models.line.ItemLineImpl;
 import tech.blastmc.holograms.models.line.TextLineImpl;
+import tech.blastmc.holograms.utils.LocationWrapper;
 import tech.blastmc.holograms.utils.PacketUtils;
 
 import java.util.ArrayList;
@@ -62,8 +65,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	@Getter
 	@Setter
 	private String id;
-	@Getter
-	protected Location location;
+	protected LocationWrapper location;
 	@Getter
 	@Setter
 	private boolean persistent = false;
@@ -103,7 +105,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	Map<UUID, Map<Integer, Object>> playerDataMap = new HashMap<>();
 
 	public HologramImpl(Map<String, Object> map) {
-		this.location = (Location) map.getOrDefault("location", location);
+		this.location = (LocationWrapper) map.getOrDefault("location", location);
 		if (map.containsKey("range"))
 			this.range = Float.parseFloat(map.get("range").toString());
 		if (map.containsKey("shadowRadius"))
@@ -142,13 +144,13 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	public @NotNull Map<String, Object> serialize() {
 		return new LinkedHashMap<>() {{
 			put("location", location);
-			if (range != null)
+			if (range != null && range != 9999F)
 				put("range", range);
-			if (shadowRadius != null)
+			if (shadowRadius != null && shadowRadius != 0F)
 				put("shadowRadius", shadowRadius);
-			if (shadowStrength != null)
+			if (shadowStrength != null && shadowStrength != 0F)
 				put("shadowStrength", shadowStrength);
-			if (billboard != null)
+			if (billboard != null && billboard != Billboard.VERTICAL)
 				put("billboard", billboard.name());
 			if (glowColor != null)
 				put("glowColor", glowColor);
@@ -162,15 +164,15 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 				put("background", background);
 			if (opacity != null)
 				put("opacity", opacity);
-			if (shadowed != null)
+			if (shadowed != null && shadowed)
 				put("shadowed", shadowed);
-			if (seeThrough != null)
+			if (seeThrough != null && seeThrough)
 				put("seeThrough", seeThrough);
-			if (alignment != null)
+			if (alignment != null && alignment != TextAlignment.CENTER)
 				put("alignment", alignment.name());
 			if (mirror != null)
 				put("withMirror", mirror);
-			if (itemTransform != null)
+			if (itemTransform != null && itemTransform != ItemDisplayTransform.GROUND)
 				put("itemTransform", itemTransform.name());
 			put("lines", lines);
 		}};
@@ -180,7 +182,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	public void spawn() {
 		generate();
 		for (Player player : Bukkit.getOnlinePlayers())
-			if (player.getWorld().equals(location.getWorld()))
+			if (player.getWorld().getName().equalsIgnoreCase(location.getWorld()))
 				if (new HologramSpawnEvent(player, this).callEvent())
 					showToPlayer(player);
 	}
@@ -191,7 +193,12 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 
 		despawn();
 
-		Location loc = location.clone();
+		Location loc;
+		try {
+			loc = location.toLocation();
+		} catch (InvalidInputException ignore) {
+			return;
+		}
 
 		Collections.reverse(lines);
 		int index = lines.size() - 1;
@@ -246,7 +253,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	@Override
 	public void showToPlayer(Player player) {
 		hideFromPlayer(player);
-		if (!player.getWorld().equals(location.getWorld()))
+		if (!player.getWorld().getName().equalsIgnoreCase(location.getWorld()))
 			return;
 		for (HologramLine line : lines) {
 			if (line instanceof Offset) continue;
@@ -447,8 +454,18 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	}
 
 	@Override
+	public Location getLocation() {
+		try {
+			return this.location.toLocation();
+		} catch (InvalidInputException ex) {
+			Holograms.warn(ex.getMessage());
+		}
+		return null;
+	}
+
+	@Override
 	public void setLocation(Location location) {
-		this.location = location;
+		this.location = new LocationWrapper(location);
 		update();
 	}
 

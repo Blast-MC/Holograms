@@ -9,6 +9,7 @@ import org.bukkit.entity.TextDisplay.TextAlignment;
 import tech.blastmc.holograms.api.HologramsAPI;
 import tech.blastmc.holograms.api.models.Hologram;
 import tech.blastmc.holograms.api.models.HologramBuilder;
+import tech.blastmc.holograms.utils.LocationWrapper;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -172,7 +173,7 @@ public class HologramBuilderImpl implements HologramBuilder {
 				throw new InvalidInputException("IDs must be unique per world");
 		}
 
-		HologramImpl holo = new HologramImpl(id, location, persistent, range, shadowRadius, shadowStrength, billboard, glowColor, blockLight, skyLight, null, lineWidth, background, opacity, shadowed, seeThrough, alignment, withMirror, itemTransform,  new HashMap<>());
+		HologramImpl holo = new HologramImpl(id, new LocationWrapper(location), persistent, range, shadowRadius, shadowStrength, billboard, glowColor, blockLight, skyLight, null, lineWidth, background, opacity, shadowed, seeThrough, alignment, withMirror, itemTransform,  new HashMap<>());
 		holo.setLines(lines);
 		if (holo.isPersistent())
 			holo.save();
