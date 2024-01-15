@@ -8,6 +8,7 @@ import gg.projecteden.commands.models.annotations.*;
 import gg.projecteden.commands.models.events.CommandEvent;
 import gg.projecteden.commands.util.JsonBuilder;
 import gg.projecteden.commands.util.Tasks;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +19,7 @@ import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay.TextAlignment;
 import org.bukkit.inventory.ItemStack;
+import tech.blastmc.holograms.Database;
 import tech.blastmc.holograms.Holograms;
 import tech.blastmc.holograms.api.HologramsAPI;
 import tech.blastmc.holograms.api.models.Hologram;
@@ -37,6 +39,8 @@ import tech.blastmc.holograms.models.line.TextLineImpl;
 import tech.blastmc.holograms.utils.SignInputGUIListener.SignInputGUI;
 import tech.blastmc.holograms.utils.StringUtils;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -61,7 +65,11 @@ public class HologramCommand extends CustomCommand {
 			.location(location())
 			.lines(name)
 			.spawn();
-		send(PREFIX + "Successfully created a new hologram at your location"); // TODO - prompt edit
+		send(PREFIX + "Successfully created a new hologram at your location");
+		send(json("&e&lClick here &eto edit")
+			.hover("&3Edit Hologram " + name)
+			.command("/hologram edit " + name)
+			.group());
 	}
 
 	@Permission("delete")
@@ -129,6 +137,51 @@ public class HologramCommand extends CustomCommand {
 		hologram.save();
 		if (gui)
 			Page.LOCATION.open(player(), hologram, 0);
+	}
+
+	@Permission("convert")
+	@Path("convert <path> [converter]")
+	void convert(java.nio.file.Path path, Database.Converter converter) {
+		if (!path.toString().endsWith(".yml"))
+			error("Cannot convert that file");
+		File file = path.toFile();
+		if (!file.exists())
+			error("File does not exist");
+
+		if (converter == null)
+			converter = Database.Converter.ofPath(path.toString()).orElseThrow(() -> new InvalidInputException("Could not find converter for &e" + path));
+
+		try {
+			Database.Converter finalConverter = converter;
+			Tasks.async(() -> {
+				send(PREFIX + "Converting Holograms. This may take a second!");
+				int converted = finalConverter.convert(file);
+				send(PREFIX + "Converted &e" + converted + " &3holograms. Restart the server for them to spawn");
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+			error("There was an error while attempting to convert that file");
+		}
+	}
+
+	@TabCompleterFor(java.nio.file.Path.class)
+	List<String> pathTabCompleter(String filter) {
+		File root = Holograms.getInstance().getDataFolder().getParentFile();
+		try {
+			return Files.walk(root.toPath())
+				.filter(path -> path.toFile().getPath().endsWith(".yml"))
+				.filter(path -> path.toString().toLowerCase().startsWith(filter))
+				.map(path -> path.toString().replace(root.getPath(), ""))
+				.toList();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return new ArrayList<>();
+	}
+
+	@ConverterFor(java.nio.file.Path.class)
+	java.nio.file.Path convertToPath(String value) {
+		return Holograms.getInstance().getDataFolder().getParentFile().toPath().resolve(value);
 	}
 
 	@TabCompleterFor(Hologram.class)

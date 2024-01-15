@@ -18,7 +18,7 @@ import java.util.List;
 public class HologramBuilderImpl implements HologramBuilder {
 
 	private String id;
-	private Location location;
+	private LocationWrapper location;
 	private boolean persistent = false;
 	private float range = 9999;
 	private float shadowRadius, shadowStrength;
@@ -43,7 +43,12 @@ public class HologramBuilderImpl implements HologramBuilder {
 
 	@Override
 	public HologramBuilder location(Location location) {
-		this.location = location;
+		this.location = new LocationWrapper(location);
+		return this;
+	}
+
+	public HologramBuilder location(LocationWrapper wrapper) {
+		this.location = wrapper;
 		return this;
 	}
 
@@ -173,7 +178,7 @@ public class HologramBuilderImpl implements HologramBuilder {
 				throw new InvalidInputException("IDs must be unique per world");
 		}
 
-		HologramImpl holo = new HologramImpl(id, new LocationWrapper(location), persistent, range, shadowRadius, shadowStrength, billboard, glowColor, blockLight, skyLight, null, lineWidth, background, opacity, shadowed, seeThrough, alignment, withMirror, itemTransform,  new HashMap<>());
+		HologramImpl holo = new HologramImpl(id, location, persistent, range, shadowRadius, shadowStrength, billboard, glowColor, blockLight, skyLight, null, lineWidth, background, opacity, shadowed, seeThrough, alignment, withMirror, itemTransform,  new HashMap<>());
 		holo.setLines(lines);
 		if (holo.isPersistent())
 			holo.save();

@@ -38,9 +38,18 @@ public abstract class HologramsAPI {
 	 * @return An instance of Hologram, or else null if none
 	 */
 	public static Hologram byId(World world, String id) {
-		return HologramsAPI.instance.byIdImpl(world, id);
+		return byId(world.getName(), id);
 	}
 
+	/**
+	 * Retrieves a {@link Hologram hologram} by world name and id
+	 * @param world The world name of the hologram
+	 * @param id The id of the hologram
+	 * @return An instance of Hologram, or else null if none
+	 */
+	public static Hologram byId(String world, String id) {
+		return HologramsAPI.instance.byIdImpl(world, id);
+	}
 	/**
 	 * Creates a {@link PowerUp PowerUp} instance that can be modified and spawned
 	 * @return A new instance of PowerUp
@@ -49,7 +58,7 @@ public abstract class HologramsAPI {
 		return HologramsAPI.instance.powerupImpl();
 	}
 
-	protected abstract Hologram byIdImpl(World world, String id);
+	protected abstract Hologram byIdImpl(String world, String id);
 
 	protected abstract HologramBuilder builderImpl();
 

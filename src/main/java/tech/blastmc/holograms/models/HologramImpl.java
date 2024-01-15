@@ -158,7 +158,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 				put("blockLight", blockLight);
 			if (skyLight != null)
 				put("skyLight", skyLight);
-			if (lineWidth != null)
+			if (lineWidth != null && lineWidth != 9999)
 				put("lineWidth", lineWidth);
 			if (background != null)
 				put("background", background);
@@ -461,6 +461,10 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 			Holograms.warn(ex.getMessage());
 		}
 		return null;
+	}
+
+	public LocationWrapper getLocationWrapper() {
+		return this.location;
 	}
 
 	@Override

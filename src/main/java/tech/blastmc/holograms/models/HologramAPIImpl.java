@@ -17,8 +17,8 @@ public class HologramAPIImpl extends HologramsAPI {
 	}
 
 	@Override
-	protected Hologram byIdImpl(World world, String id) {
-		return Database.getWorldsMap().getOrDefault(world.getName().toLowerCase().replace(" ", "_"), new HashSet<>()).stream()
+	protected Hologram byIdImpl(String world, String id) {
+		return Database.getWorldsMap().getOrDefault(world.toLowerCase().replace(" ", "_"), new HashSet<>()).stream()
 			.filter(holo -> holo.getId().equalsIgnoreCase(id)).findFirst().orElse(null);
 	}
 
