@@ -149,7 +149,9 @@ public class HologramCommand extends CustomCommand {
 			error("File does not exist");
 
 		if (converter == null)
-			converter = Database.Converter.ofPath(path.toString()).orElseThrow(() -> new InvalidInputException("Could not find converter for &e" + path));
+			converter = Database.Converter.ofPath(path.toString())
+				.orElseThrow(() -> new InvalidInputException("Could not find converter for &e" + path.toString()
+					.replace(Holograms.getInstance().getDataFolder().getParentFile().toPath() + "/", "")));
 
 		try {
 			Database.Converter finalConverter = converter;
@@ -170,8 +172,8 @@ public class HologramCommand extends CustomCommand {
 		try {
 			return Files.walk(root.toPath())
 				.filter(path -> path.toFile().getPath().endsWith(".yml"))
-				.filter(path -> path.toString().toLowerCase().startsWith(filter))
-				.map(path -> path.toString().replace(root.getPath(), ""))
+				.filter(path -> path.toString().toLowerCase().replace(root.toPath().toString().toLowerCase() + "/", "").startsWith(filter))
+				.map(path -> path.toString().replace(root.toPath() + "/", ""))
 				.toList();
 		} catch (Exception ex) {
 			ex.printStackTrace();
