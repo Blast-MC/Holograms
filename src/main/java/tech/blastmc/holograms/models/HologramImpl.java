@@ -235,11 +235,12 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 				holoLine.applyDefaults(range, billboard, glowColor, itemTransform, lineWidth, background, opacity, shadowed, seeThrough, alignment, mirror);
 
 				if (holoLine.getOnClick() != null) {
-					Slime slime = new Slime(EntityType.SLIME, PacketUtils.toNMS(loc.getWorld()));
-					slime.setPos(PacketUtils.toNMS(loc));
-					slime.setInvisible(true);
-					slime.setSize(1, true);
-					holoLine.setInteractEntity(slime);
+					ArmorStand armorStand = new ArmorStand(EntityType.ARMOR_STAND, PacketUtils.toNMS(loc.getWorld()));
+					armorStand.setInvisible(true);
+					armorStand.setSmall(true);
+					armorStand.setNoGravity(true);
+					armorStand.setPos(PacketUtils.toNMS(loc));
+					holoLine.setInteractEntity(armorStand);
 				}
 
 				loc.add(0, getYAdditional(holoLine), 0);
@@ -363,7 +364,8 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	}
 
 	public List<HologramLine> setLines(List<Object> lines) {
-		this.lines = convert(lines);
+		for (int i = 0; i < lines.size(); i++)
+			setLine(i, lines.get(i));
 		return this.lines;
 	}
 
@@ -375,7 +377,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	public HologramLine setLine(int index, Object line) {
 		if (lines == null)
 			lines = new ArrayList<>();
-		if (line instanceof String str && lines.get(index) instanceof TextLineImpl text) {
+		if (line instanceof String str && lines.size() > index && lines.get(index) instanceof TextLineImpl text) {
 			((TextDisplay) text.getDisplay()).setText(PacketUtils.toNMS(str));
 			if (text.getMirror() != null)
 				((TextDisplay) text.getMirror()).setText(PacketUtils.toNMS(str));
@@ -386,7 +388,10 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 		else {
 			HologramLine holoLine = convert(line);
 			despawn();
-			lines.set(index, holoLine);
+			if (lines.size() <= index)
+				lines.add(holoLine);
+			else
+				lines.set(index, holoLine);
 			spawn();
 			return holoLine;
 		}
@@ -506,9 +511,12 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	}
 
 	private final BiConsumer<HologramLineImpl, Display> basicsConsumer = (line, display) -> {
-		display.setViewRange(range);
-		display.setShadowRadius(shadowRadius);
-		display.setShadowStrength(shadowStrength);
+		if (range != null)
+			display.setViewRange(range);
+		if (shadowRadius != null)
+			display.setShadowRadius(shadowRadius);
+		if (shadowStrength != null)
+			display.setShadowStrength(shadowStrength);
 
 		if (glowColor != null)
 			display.setGlowColorOverride(glowColor.asARGB());
