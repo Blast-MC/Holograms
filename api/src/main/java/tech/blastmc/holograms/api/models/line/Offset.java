@@ -29,6 +29,10 @@ public class Offset implements HologramLine, ConfigurationSerializable {
 		return new Offset(value);
 	}
 
+	public static Offset text() { return of(.3F); }
+	public static Offset item() { return of(.35F); }
+	public static Offset block() { return of(1.3F); }
+
 	private Offset(float value) { this.value = value; }
 
 	public Offset(Map<String, Object> map) {
