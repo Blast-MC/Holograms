@@ -7,9 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.util.Brightness;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Display.BlockDisplay;
@@ -239,7 +237,8 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 					armorStand.setInvisible(true);
 					armorStand.setSmall(true);
 					armorStand.setNoGravity(true);
-					armorStand.setPos(PacketUtils.toNMS(loc));
+					armorStand.setPos(PacketUtils.toNMS(loc.clone().subtract(0, .25, 0)));
+					armorStand.setRot(loc.getYaw(), loc.getPitch());
 					holoLine.setInteractEntity(armorStand);
 				}
 
@@ -294,6 +293,10 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	public void sendSpawnPacket(Player player, HologramLineImpl line) {
 		ClientboundAddEntityPacket addPacket = new ClientboundAddEntityPacket(line.getDisplay());
 		PacketUtils.send(player, addPacket);
+
+		ClientboundTeleportEntityPacket teleportEntityPacket = new ClientboundTeleportEntityPacket(line.getDisplay());
+		PacketUtils.send(player, teleportEntityPacket);
+
 		if (line instanceof TextLineImpl text) {
 			if (text.getMirror() != null) {
 				ClientboundAddEntityPacket mirrorPacket = new ClientboundAddEntityPacket(((TextLineImpl) line).getMirror());
@@ -304,6 +307,9 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 		if (line.getInteractEntity() != null) {
 			ClientboundAddEntityPacket interactPacket = new ClientboundAddEntityPacket(line.getInteractEntity());
 			PacketUtils.send(player, interactPacket);
+
+			ClientboundTeleportEntityPacket teleportEntityPacket2 = new ClientboundTeleportEntityPacket(line.getInteractEntity());
+			PacketUtils.send(player, teleportEntityPacket2);
 		}
 	}
 

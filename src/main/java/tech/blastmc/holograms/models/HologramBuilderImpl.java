@@ -14,6 +14,7 @@ import tech.blastmc.holograms.utils.LocationWrapper;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HologramBuilderImpl implements HologramBuilder {
 
@@ -177,11 +178,13 @@ public class HologramBuilderImpl implements HologramBuilder {
 			if (idHolo != null)
 				throw new InvalidInputException("IDs must be unique per world");
 		}
+		else {
+			throw new InvalidInputException("Cannot create a Hologram without an ID");
+		}
 
 		HologramImpl holo = new HologramImpl(id, location, persistent, range, shadowRadius, shadowStrength, billboard, glowColor, blockLight, skyLight, null, lineWidth, background, opacity, shadowed, seeThrough, alignment, withMirror, itemTransform,  new HashMap<>());
-		holo.setLines(lines);
-		if (holo.isPersistent())
-			holo.save();
+		holo.setLinesRaw(lines.stream().map(holo::convert).collect(Collectors.toList()));
+		holo.save();
 		return holo;
 	}
 

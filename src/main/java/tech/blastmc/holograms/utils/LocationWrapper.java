@@ -22,19 +22,33 @@ public class LocationWrapper implements ConfigurationSerializable {
 
 	String world;
 	double x, y, z;
+	float yaw, pitch;
 
 	public LocationWrapper(Location location) {
 		this.world = location.getWorld().getName();
 		this.x = location.getX();
 		this.y = location.getY();
 		this.z = location.getZ();
+		this.yaw = location.getYaw();
+		this.pitch = location.getPitch();
 	}
 
 	public LocationWrapper(Map<String, Object> map) {
 		this.world = (String) map.getOrDefault("world", null);
-		this.x = (Double) map.getOrDefault("x", x);
-		this.y = (Double) map.getOrDefault("y", y);
-		this.z = (Double) map.getOrDefault("z", z);
+		this.x = (double) map.getOrDefault("x", x);
+		this.y = (double) map.getOrDefault("y", y);
+		this.z = (double) map.getOrDefault("z", z);
+		try {
+			this.yaw = (float) map.getOrDefault("yaw", yaw);
+			this.pitch = (float) map.getOrDefault("pitch", pitch);
+		} catch (Exception ignore) { }
+	}
+
+	public LocationWrapper(String world, double x, double y, double z) {
+		this.world = world;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	@Override
@@ -44,6 +58,10 @@ public class LocationWrapper implements ConfigurationSerializable {
 			put("x", LocationWrapper.this.x);
 			put("y", LocationWrapper.this.y);
 			put("z", LocationWrapper.this.z);
+			if (yaw != 0)
+				put("yaw", LocationWrapper.this.yaw);
+			if (pitch != 0)
+				put("pitch", LocationWrapper.this.pitch);
 		}};
 	}
 
@@ -54,6 +72,6 @@ public class LocationWrapper implements ConfigurationSerializable {
 		} catch (Exception ignore) {
 			throw new InvalidInputException("World " + this.world + " does not exist");
 		}
-		return new Location(world, this.x, this.y, this.z);
+		return new Location(world, this.x, this.y, this.z, this.yaw, this.pitch);
 	}
 }
