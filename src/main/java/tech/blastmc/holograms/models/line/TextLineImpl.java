@@ -150,22 +150,22 @@ public class TextLineImpl extends HologramLineImpl implements ConfigurationSeria
 
 	private void applyDefaultsToDisplay(Display display, Object... objects) {
 		TextDisplay text = (TextDisplay) display;
-		if (objects[0] != null) {
+		if (getLineValue(this.lineWidth, (Integer) objects[0]) != null) {
 			Reflection.MethodInvoker method = Reflection.getMethod(TextDisplay.class, "b", int.class);
-			method.invoke(display, ((Integer) objects[0]).intValue());
+			method.invoke(display, getLineValue(this.lineWidth, (Integer) objects[0]).intValue());
 		}
-		if (objects[1] != null && background != null) {
+		if (getLineValue(this.background, (Color) objects[1]) != null) {
 			Reflection.MethodInvoker method = Reflection.getMethod(Display.TextDisplay.class, "c",  int.class);
-			method.invoke(display, ((Color) objects[1]).asARGB());
+			method.invoke(display, getLineValue(this.background, (Color) objects[1]).asARGB());
 		}
-		if (objects[2] != null)
-			text.setTextOpacity((Byte) objects[2]);
-		if (objects[3] != null)
-			text.setSharedFlag(TextDisplay.FLAG_SHADOW, (Boolean) objects[3]);
-		if (objects[4] != null)
-			text.setSharedFlag(TextDisplay.FLAG_SEE_THROUGH, (Boolean) objects[4]);
-		if (objects[5] != null)
-			switch ((TextAlignment) objects[5]) {
+		if (getLineValue(this.opacity, (Byte) objects[2]) != null)
+			text.setTextOpacity(getLineValue(this.opacity, (Byte) objects[2]));
+		if (getLineValue(this.shadowed, (Boolean) objects[3]) != null)
+			text.setSharedFlag(TextDisplay.FLAG_SHADOW, getLineValue(this.shadowed, (Boolean) objects[3]));
+		if (getLineValue(this.seeThrough, (Boolean) objects[4]) != null)
+			text.setSharedFlag(TextDisplay.FLAG_SEE_THROUGH, getLineValue(this.seeThrough, (Boolean) objects[4]));
+		if (getLineValue(this.alignment, (TextAlignment) objects[5]) != null)
+			switch (getLineValue(this.alignment, (TextAlignment) objects[5])) {
 				case LEFT -> {
 					text.setSharedFlag(TextDisplay.FLAG_ALIGN_LEFT, true);
 					text.setSharedFlag(TextDisplay.FLAG_ALIGN_RIGHT, false);

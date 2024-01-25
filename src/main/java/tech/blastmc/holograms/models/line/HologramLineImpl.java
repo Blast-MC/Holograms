@@ -75,17 +75,21 @@ public abstract class HologramLineImpl implements HologramLine {
 	                          Integer lineWidth, Color background, Byte opacity, Boolean shadowed, Boolean seeThrough,
 	                          TextAlignment alignment, Boolean mirror) {
 
-		if (range != null)
-			getDisplay().setViewRange(range);
-		if (billboard != null)
-			getDisplay().setBillboardConstraints(BillboardConstraints.valueOf(billboard.name()));
-		if (glowColor != null)
-			getDisplay().setGlowColorOverride(glowColor.asARGB());
+		if (getLineValue(this.range, range) != null)
+			getDisplay().setViewRange(getLineValue(this.range, range));
+		if (getLineValue(this.billboard, billboard) != null)
+			getDisplay().setBillboardConstraints(BillboardConstraints.valueOf(getLineValue(this.billboard, billboard).name()));
+		if (getLineValue(this.glowColor, glowColor) != null)
+			getDisplay().setGlowColorOverride(getLineValue(this.glowColor, glowColor).asARGB());
 
 		if (this instanceof ItemLineImpl)
 			applyTypeDefaults(itemTransform);
 		if (this instanceof TextLineImpl)
 			applyTypeDefaults(lineWidth, background, opacity, shadowed, seeThrough, alignment, mirror);
+	}
+
+	public <T> T getLineValue(T lineValue, T holoValue) {
+		return lineValue == null ? holoValue : lineValue;
 	}
 
 	@Override

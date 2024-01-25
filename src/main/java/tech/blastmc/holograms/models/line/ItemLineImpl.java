@@ -91,8 +91,8 @@ public class ItemLineImpl extends HologramLineImpl implements ConfigurationSeria
 	@Override
 	public void applyTypeDefaults(Object... objects) {
 		ItemDisplayTransform transform = (ItemDisplayTransform) objects[0];
-		if (transform != null) {
-			ItemDisplayContext context = switch (transform) {
+		if (getLineValue(this.itemTransform, transform) != null) {
+			ItemDisplayContext context = switch (getLineValue(this.itemTransform, transform)) {
 				case FIRSTPERSON_LEFTHAND -> ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
 				case FIRSTPERSON_RIGHTHAND -> ItemDisplayContext.FIRST_PERSON_RIGHT_HAND;
 				case THIRDPERSON_LEFTHAND -> ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
