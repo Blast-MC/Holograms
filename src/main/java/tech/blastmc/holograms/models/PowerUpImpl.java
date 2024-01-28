@@ -85,7 +85,9 @@ public class PowerUpImpl extends HologramImpl implements PowerUp, Listener {
 	public void onMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		if (!player.getWorld().getName().equalsIgnoreCase(this.location.getWorld())) return;
-		if (player.getLocation().distanceSquared(this.location.toLocation()) > pickupRange) return;
+		if (player.getLocation().distanceSquared(this.location.toLocation()) > pickupRange * pickupRange)
+			if (player.getEyeLocation().distanceSquared(this.location.toLocation()) > pickupRange * pickupRange)
+				return;
 
 		remove();
 		this.onPickup.accept(player);
