@@ -73,19 +73,19 @@ public class TextLineImpl extends HologramLineImpl implements ConfigurationSeria
 	public @NotNull Map<String, Object> serialize() {
 		LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) super.serialize();
 		map.put("text", text);
-		if (lineWidth != null && !lineWidth.equals(getHologram().getLineWidth()))
+		if (lineWidth != null && getHologram() != null && !lineWidth.equals(getHologram().getLineWidth()))
 			map.put("lineWidth", lineWidth);
-		if (background != null && !background.equals(getHologram().getBackground()))
+		if (background != null && getHologram() != null && !background.equals(getHologram().getBackground()))
 			map.put("background", background);
-		if (opacity != null && !opacity.equals(getHologram().getOpacity()))
+		if (opacity != null && getHologram() != null && !opacity.equals(getHologram().getOpacity()))
 			map.put("opacity", opacity);
-		if (shadowed != null && !shadowed.equals(getHologram().getShadowed()))
+		if (shadowed != null && getHologram() != null && !shadowed.equals(getHologram().getShadowed()))
 			map.put("shadowed", shadowed);
-		if (seeThrough != null && !seeThrough.equals(getHologram().getSeeThrough()))
+		if (seeThrough != null && getHologram() != null && !seeThrough.equals(getHologram().getSeeThrough()))
 			map.put("seeThrough", seeThrough);
-		if (alignment != null && !alignment.equals(getHologram().getAlignment()))
+		if (alignment != null && getHologram() != null && !alignment.equals(getHologram().getAlignment()))
 			map.put("alignment", alignment.name());
-		if (withMirror != null && !withMirror.equals(getHologram().getMirror()))
+		if (withMirror != null && getHologram() != null && !withMirror.equals(getHologram().getMirror()))
 			map.put("withMirror", withMirror);
 		return map;
 	}

@@ -208,7 +208,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 
 				HologramLineImpl holoLine = (HologramLineImpl) line;
 				holoLine.setHologram(this);
-				Display displayEntity = holoLine.render(loc);
+				Display displayEntity = holoLine.render(loc.clone());
 
 				if (index == (lines.size() - 1)) {
 					if (shadowRadius != null && shadowStrength != null) {
@@ -429,7 +429,8 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 			lines = new ArrayList<>();
 		despawn();
 		lines.remove(index);
-		spawn();
+		if (!lines.isEmpty())
+			spawn();
 	}
 
 	@Override
@@ -493,6 +494,36 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	@Override
 	public void setMirror(Boolean mirror) {
 		this.mirror = mirror;
+		update();
+	}
+
+	@Override
+	public void setLineWidth(Integer width) {
+		this.lineWidth = width;
+		update();
+	}
+
+	@Override
+	public void setBackground(Color color) {
+		this.background = color;
+		update();
+	}
+
+	@Override
+	public void setOpacity(Byte opacity) {
+		this.opacity = opacity;
+		update();
+	}
+
+	@Override
+	public void setShadowed(Boolean shadowed) {
+		this.shadowed = shadowed;
+		update();
+	}
+
+	@Override
+	public void setSeeThrough(Boolean seeThrough) {
+		this.seeThrough = seeThrough;
 		update();
 	}
 

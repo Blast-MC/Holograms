@@ -49,14 +49,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
-@Permission("holograms")
+@Aliases({"holo", "hg", "holograms"})
 public class HologramCommand extends CustomCommand {
 
 	public HologramCommand(CommandEvent event) {
 		super(event);
 	}
 
-	@Permission("create")
+	@Permission("holograms.create")
 	@Path("create <name>")
 	void create(String name) {
 		new HologramBuilderImpl()
@@ -72,16 +72,16 @@ public class HologramCommand extends CustomCommand {
 			.group());
 	}
 
-	@Permission("delete")
+	@Permission("holograms.delete")
 	@Path("(delete|remove|del) <hologram>")
 	void delete(Hologram hologram) {
 		hologram.remove();
 		send(PREFIX + "Removed hologram &e" + hologram.getId());
 	}
 
-	@Permission("list")
+	@Permission("holograms.list")
 	@Path("list [world] [page] [--range]")
-	void list(@Arg("current") World world, @Arg("1") int page, double range) {
+	void list(@Arg("current") World world, @Arg("1") int page, @Switch(shorthand = 'r') double range) {
 		send(PREFIX + "Holograms for world &e" + world.getName());
 
 		BiFunction<Hologram, String, JsonBuilder> formatter = (holo, index) ->
@@ -96,13 +96,13 @@ public class HologramCommand extends CustomCommand {
 		paginate(holograms, formatter, "hologram list " + world.getName(), page);
 	}
 
-	@Permission("teleportTo")
+	@Permission("holograms.teleportTo")
 	@Path("teleportTo <hologram>")
 	void teleportTo(Hologram hologram) {
 		player().teleport(hologram.getLocation());
 	}
 
-	@Permission("edit")
+	@Permission("holograms.edit")
 	@Path("edit <hologram> [action] [context] [extra] [extra] [extra] [--nogui]")
 	void editAction(Hologram hologram, @Arg("gui") EditActions action,
 	                @Arg(context = 2, tabCompleter = HologramData.class) String context,
@@ -117,14 +117,14 @@ public class HologramCommand extends CustomCommand {
 		action.execute(hologram, player(), data, nogui);
 	}
 
-	@Permission("moveHere")
+	@Permission("holograms.moveHere")
 	@Path("moveHere <hologram>")
 	void moveHere(Hologram hologram) {
 		hologram.setLocation(location());
 		hologram.save();
 	}
 
-	@Permission("shift")
+	@Permission("holograms.shift")
 	@Path("shift <hologram> [--x] [--y] [--z] [--gui]")
 	void shift(Hologram hologram, @Switch double x, @Switch double y, @Switch double z, @Switch boolean gui) {
 		if (x == 0 && y == 0 && z == 0) {
@@ -139,7 +139,7 @@ public class HologramCommand extends CustomCommand {
 			Page.LOCATION.open(player(), hologram, 0);
 	}
 
-	@Permission("convert")
+	@Permission("holograms.convert")
 	@Path("convert <path> [converter]")
 	void convert(java.nio.file.Path path, Database.Converter converter) {
 		if (!path.toString().endsWith(".yml"))
@@ -410,7 +410,7 @@ public class HologramCommand extends CustomCommand {
 		public CompletableFuture<Object> getObject(String type, String data, Player player) {
 			CompletableFuture<Object> completable = new CompletableFuture<>();
 			switch (type.toLowerCase()) {
-				case "text" -> completable.complete(data);
+				case "text" -> completable.complete(StringUtils.isNullOrEmpty(data) ? "Text Line" : data);
 				case "block" -> {
 					if (data.isEmpty()) {
 						completable.complete(Material.STONE.createBlockData());
@@ -445,7 +445,12 @@ public class HologramCommand extends CustomCommand {
 						SignInputGUI.of("", "▲▲▲▲▲▲▲", "Input Value", "Offset Amount")
 							.onFinish((p, lines) -> {
 								try {
-									completable.complete(Offset.of(Float.parseFloat(lines[0])));
+									switch (lines[0].toLowerCase().trim()) {
+										case "text" -> completable.complete(Offset.text());
+										case "item" -> completable.complete(Offset.item());
+										case "block" -> completable.complete(Offset.block());
+										default -> completable.complete(Offset.of(Float.parseFloat(lines[0])));
+									}
 								} catch (Exception ignore) {
 									completable.complete(Offset.of(1f));
 								}
@@ -454,10 +459,14 @@ public class HologramCommand extends CustomCommand {
 					}
 					else {
 						try {
-							float offset = Float.parseFloat(data);
-							completable.complete(Offset.of(offset));
+							switch (data.toLowerCase().trim()) {
+								case "text" -> completable.complete(Offset.text());
+								case "item" -> completable.complete(Offset.item());
+								case "block" -> completable.complete(Offset.block());
+								default -> completable.complete(Offset.of(Float.parseFloat(data)));
+							}
 						} catch (Exception ex) {
-							throw new InvalidInputException("Unable to parse '" + data + "' as a float");
+							throw new InvalidInputException("Unable to parse '" + data + "' as a float or offset type");
 						}
 					}
 				}
@@ -534,7 +543,7 @@ public class HologramCommand extends CustomCommand {
 		List<String> list = new ArrayList<>();
 		switch (context.toLowerCase()) {
 			case "item" -> Arrays.stream(Material.values()).filter(Material::isItem).map(_enum -> _enum.name().toLowerCase()).filter(x -> x.startsWith(filter)).forEach(list::add);
-			case "offset" -> list.addAll(Arrays.asList(".1", ".5", "1"));
+			case "offset" -> list.addAll(Arrays.asList(".1", ".5", "1", "text", "item", "block"));
 			case "billboard" -> list.addAll(tabCompleteEnum(filter, Billboard.class));
 			case "text_alignment" -> list.addAll(tabCompleteEnum(filter, TextAlignment.class));
 			case "item_transform" -> list.addAll(tabCompleteEnum(filter, ItemDisplayTransform.class));

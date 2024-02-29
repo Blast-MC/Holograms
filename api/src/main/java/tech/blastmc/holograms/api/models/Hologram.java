@@ -167,6 +167,26 @@ public interface Hologram {
 	 */
 	ItemDisplayTransform getItemTransform();
 
+	void setLineWidth(Integer width);
+
+	Integer getLineWidth();
+
+	void setBackground(Color color);
+
+	Color getBackground();
+
+	void setOpacity(Byte opacity);
+
+	Byte getOpacity();
+
+	void setShadowed(Boolean shadowed);
+
+	Boolean getShadowed();
+
+	void setSeeThrough(Boolean seeThrough);
+
+	Boolean getSeeThrough();
+
 	/**
 	 * Gets the {@link HologramLine line objects} for the hologram
 	 * @return A list of line objects for this hologram

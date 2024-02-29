@@ -15,6 +15,7 @@ import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay.TextAlignment;
 import org.jetbrains.annotations.NotNull;
+import tech.blastmc.holograms.api.models.Hologram;
 import tech.blastmc.holograms.api.models.line.HologramLine;
 import tech.blastmc.holograms.models.HologramImpl;
 
@@ -28,7 +29,7 @@ import java.util.function.Consumer;
 public abstract class HologramLineImpl implements HologramLine {
 
 	@NonNull
-	private HologramImpl hologram;
+	private Hologram hologram;
 	private Display display;
 	private int index;
 

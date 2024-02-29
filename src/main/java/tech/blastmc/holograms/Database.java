@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import tech.blastmc.holograms.api.models.HologramBuilder;
+import tech.blastmc.holograms.api.models.line.Offset;
 import tech.blastmc.holograms.models.HologramBuilderImpl;
 import tech.blastmc.holograms.models.HologramImpl;
 import tech.blastmc.holograms.utils.LocationWrapper;
@@ -103,7 +104,7 @@ public class Database {
 						LocationWrapper wrapper = new LocationWrapper(
 							config.getString(section + ".position.world"),
 							config.getDouble(section + ".position.x"),
-							config.getDouble(section + ".position.y"),
+							config.getDouble(section + ".position.y") - (Offset.text().getValue() * (lines.size() - 1)),
 							config.getDouble(section + ".position.z")
 						);
 

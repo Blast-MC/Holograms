@@ -2,3 +2,32 @@ name: Holograms
 version: '${version}'
 main: tech.blastmc.holograms.Holograms
 api-version: 1.19
+permissions:
+  holograms:
+    default: false
+  holograms.*:
+    description: Allows all commands for editing holograms
+    default: false
+    children:
+      holograms.create: true
+      holograms.delete: true
+      holograms.list: true
+      holograms.edit: true
+      holograms.teleportTo: true
+      holograms.moveHere: true
+  holograms.create:
+    default: false
+  holograms.delete:
+    default: false
+  holograms.list:
+    default: false
+  holograms.edit:
+    default: false
+  holograms.teleportTo:
+    default: false
+  holograms.moveHere:
+    default: false
+  holograms.shift:
+    default: false
+  holograms.convert:
+    default: op

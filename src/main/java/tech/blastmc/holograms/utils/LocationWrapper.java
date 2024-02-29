@@ -39,8 +39,8 @@ public class LocationWrapper implements ConfigurationSerializable {
 		this.y = (double) map.getOrDefault("y", y);
 		this.z = (double) map.getOrDefault("z", z);
 		try {
-			this.yaw = (float) map.getOrDefault("yaw", yaw);
-			this.pitch = (float) map.getOrDefault("pitch", pitch);
+			this.yaw = Float.parseFloat(map.getOrDefault("yaw", yaw).toString());
+			this.pitch = Float.parseFloat(map.getOrDefault("pitch", pitch).toString());
 		} catch (Exception ignore) { }
 	}
 

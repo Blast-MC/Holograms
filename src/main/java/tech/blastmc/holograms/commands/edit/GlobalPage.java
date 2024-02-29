@@ -41,6 +41,8 @@ public class GlobalPage extends EditPage {
 			.hover("&eModify location")
 			.command("hologram shift " + hologram.getId() + " --gui");
 
+		int i = 4;
+
 		for (GlobalSetting setting : GlobalSetting.values()) {
 			json.group().next("\n")
 				.next("&f" + Strings.repeat(" ", setting.spacing))
@@ -54,6 +56,17 @@ public class GlobalPage extends EditPage {
 				command += " next";
 			json.command(command)
 				.group();
+
+			if (++i == 14) {
+				book.addPage(json.build());
+
+				json = new JsonBuilder();
+				addBackButton(json, Page.MAIN, 0);
+				json.next("   &6&lGlobal Settings")
+					.group().next("\n")
+					.group().next("\n");
+				i = 4;
+			}
 		}
 
 		book.addPage(json.build());
@@ -239,6 +252,151 @@ public class GlobalPage extends EditPage {
 			public Object get(HologramLine line) {
 				if (line.getSkyLight() != null && line.getSkyLight() != get(line.getHologram()))
 					return line.getSkyLight();
+				return get(line.getHologram());
+			}
+		},
+		LINE_WIDTH(6, Integer.class) {
+			@Override
+			public void apply(Hologram hologram, Object data) {
+				hologram.setLineWidth((Integer) data);
+			}
+
+			@Override
+			public void apply(HologramLine line, Object data) {
+				if (line instanceof TextLineImpl text) {
+					text.setLineWidth((Integer) data);
+					line.getHologram().update();
+				}
+			}
+
+			@Override
+			public Object get(Hologram hologram) {
+				return hologram.getLineWidth();
+			}
+
+			@Override
+			public Object get(HologramLine line) {
+				if (line instanceof TextLineImpl text) {
+					if (text.getLineWidth() != null && text.getLineWidth() != get(line.getHologram()))
+						return text.getLineWidth();
+					return get(line.getHologram());
+				}
+				return get(line.getHologram());
+			}
+		},
+		BACKGROUND_COLOR(3, Color.class) {
+			@Override
+			public void apply(Hologram hologram, Object data) {
+				hologram.setBackground((Color) data);
+			}
+
+			@Override
+			public void apply(HologramLine line, Object data) {
+				if (line instanceof TextLineImpl text) {
+					text.setBackground((Color) data);
+					line.getHologram().update();
+				}
+			}
+
+			@Override
+			public Object get(Hologram hologram) {
+				return hologram.getBackground();
+			}
+
+			@Override
+			public Object get(HologramLine line) {
+				if (line instanceof TextLineImpl text) {
+					if (text.getBackground() != null && !text.getBackground().equals(get(line.getHologram())))
+						return text.getBackground();
+					return get(line.getHologram());
+				}
+				return get(line.getHologram());
+			}
+		},
+		OPACITY(8, Byte.class) {
+			@Override
+			public void apply(Hologram hologram, Object data) {
+				hologram.setOpacity((Byte) data);
+			}
+
+			@Override
+			public void apply(HologramLine line, Object data) {
+				if (line instanceof TextLineImpl text) {
+					text.setOpacity((Byte) data);
+					line.getHologram().update();
+				}
+			}
+
+			@Override
+			public Object get(Hologram hologram) {
+				return hologram.getOpacity();
+			}
+
+			@Override
+			public Object get(HologramLine line) {
+				if (line instanceof TextLineImpl text) {
+					if (text.getOpacity() != null && text.getOpacity() != get(line.getHologram()))
+						return text.getOpacity();
+					return get(line.getHologram());
+				}
+				return get(line.getHologram());
+			}
+		},
+		SHADOWED(8, Boolean.class) {
+			@Override
+			public void apply(Hologram hologram, Object data) {
+				hologram.setShadowed((Boolean) data);
+			}
+
+			@Override
+			public void apply(HologramLine line, Object data) {
+				if (line instanceof TextLineImpl text) {
+					text.setShadowed((Boolean) data);
+					line.getHologram().update();
+				}
+			}
+
+			@Override
+			public Object get(Hologram hologram) {
+				return hologram.getShadowed();
+			}
+
+			@Override
+			public Object get(HologramLine line) {
+				if (line instanceof TextLineImpl text) {
+					if (text.getShadowed() != null && text.getShadowed() != get(line.getHologram()))
+						return text.getShadowed();
+					return get(line.getHologram());
+				}
+				return get(line.getHologram());
+			}
+		},
+		SEE_THROUGH(6, Boolean.class) {
+			@Override
+			public void apply(Hologram hologram, Object data) {
+				hologram.setSeeThrough((Boolean) data);
+			}
+
+			@Override
+			public void apply(HologramLine line, Object data) {
+				if (line instanceof TextLineImpl text) {
+					text.setSeeThrough((Boolean) data);
+					line.getHologram().update();
+				}
+			}
+
+			@Override
+			public Object get(Hologram hologram) {
+				return hologram.getSeeThrough();
+			}
+
+			@Override
+			public Object get(HologramLine line) {
+				if (line instanceof TextLineImpl text) {
+					if (text.getSeeThrough() != null && text.getSeeThrough() != get(line.getHologram()))
+						return text.getSeeThrough();
+					return get(line.getHologram());
+				}
 				return get(line.getHologram());
 			}
 		},
@@ -472,7 +630,7 @@ public class GlobalPage extends EditPage {
 
 			if (type == Color.class) {
 				Integer r, g, b, a = null;
-				String[] args = data.split(",");
+				String[] args = data.replace(" ", "").split(",");
 				try {
 					r = Integer.parseInt(args[0]);
 					g = Integer.parseInt(args[1]);
