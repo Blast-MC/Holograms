@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -27,7 +28,7 @@ public class PowerUpImpl extends HologramImpl implements PowerUp, Listener {
 
 	private ItemStack item;
 	private List<String> title;
-	private Consumer<Player> onPickup;
+	private Predicate<Player> onPickup;
 	private float pickupRange = 1;
 
 	@Override
@@ -43,7 +44,7 @@ public class PowerUpImpl extends HologramImpl implements PowerUp, Listener {
 	}
 
 	@Override
-	public PowerUp onPickup(Consumer<Player> onPickup) {
+	public PowerUp onPickup(Predicate<Player> onPickup) {
 		this.onPickup = onPickup;
 		return this;
 	}
@@ -89,8 +90,8 @@ public class PowerUpImpl extends HologramImpl implements PowerUp, Listener {
 			if (player.getEyeLocation().distanceSquared(this.location.toLocation()) > pickupRange * pickupRange)
 				return;
 
-		remove();
-		this.onPickup.accept(player);
+		if (this.onPickup.test(player))
+			remove();
 	}
 
 	@Override

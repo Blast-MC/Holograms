@@ -1,9 +1,9 @@
 plugins {
     java
     `maven-publish`
-    id("io.freefair.lombok") version "8.0.1"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("io.papermc.paperweight.userdev") version "1.3.7"
+    id("io.freefair.lombok") version "8.11"
+    id("com.gradleup.shadow") version "8.3.0"
+    id("io.papermc.paperweight.userdev") version "1.7.7"
 }
 
 allprojects {
@@ -22,25 +22,25 @@ allprojects {
 
 subprojects {
     apply(plugin = "java")
-    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "com.gradleup.shadow")
     apply(plugin = "io.freefair.lombok")
     apply(plugin = "maven-publish")
 
     dependencies {
-        compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+        compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
     }
 
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
 dependencies {
     implementation(project(":HologramsAPI"))
     implementation("gg.projecteden:commands-api:1.0.0-SNAPSHOT")
-    implementation("org.reflections:reflections:0.9.11")
-    implementation("de.tr7zw:item-nbt-api:2.11.2")
-    paperweightDevBundle("io.papermc.paper", "1.20.4-R0.1-SNAPSHOT")
+    implementation("org.reflections:reflections:0.10.2")
+    implementation("de.tr7zw:item-nbt-api:2.14.1")
+    paperweight.paperDevBundle("1.21.3-R0.1-SNAPSHOT", "gg.projecteden.parchment")
 }
 
 tasks {
@@ -50,7 +50,7 @@ tasks {
 
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(17)
+        options.release.set(21)
         options.compilerArgs.add("-parameters")
     }
 

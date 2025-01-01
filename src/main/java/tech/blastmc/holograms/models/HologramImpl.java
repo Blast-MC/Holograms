@@ -8,12 +8,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import net.minecraft.network.protocol.game.*;
+import net.minecraft.server.level.ServerEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Brightness;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Display.BlockDisplay;
 import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Display.TextDisplay;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.PositionMoveRotation;
+import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.phys.AABB;
@@ -44,14 +48,7 @@ import tech.blastmc.holograms.models.line.TextLineImpl;
 import tech.blastmc.holograms.utils.LocationWrapper;
 import tech.blastmc.holograms.utils.PacketUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 @ToString
@@ -290,25 +287,29 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 		});
 	}
 
+	private ServerEntity getServerEntity(Display display) {
+		return ((ServerLevel) display.level()).getChunkSource().chunkMap.entityMap.get(display).serverEntity;
+	}
+
 	public void sendSpawnPacket(Player player, HologramLineImpl line) {
-		ClientboundAddEntityPacket addPacket = new ClientboundAddEntityPacket(line.getDisplay());
+		ClientboundAddEntityPacket addPacket = new ClientboundAddEntityPacket(line.getDisplay(), getServerEntity(line.getDisplay()));
 		PacketUtils.send(player, addPacket);
 
-		ClientboundTeleportEntityPacket teleportEntityPacket = new ClientboundTeleportEntityPacket(line.getDisplay());
+		ClientboundTeleportEntityPacket teleportEntityPacket = new ClientboundTeleportEntityPacket(line.getDisplay().getId(), PositionMoveRotation.of(line.getDisplay()), Set.of(), line.getDisplay().onGround);
 		PacketUtils.send(player, teleportEntityPacket);
 
 		if (line instanceof TextLineImpl text) {
 			if (text.getMirror() != null) {
-				ClientboundAddEntityPacket mirrorPacket = new ClientboundAddEntityPacket(((TextLineImpl) line).getMirror());
+				ClientboundAddEntityPacket mirrorPacket = new ClientboundAddEntityPacket(((TextLineImpl) line).getMirror(), getServerEntity(text.getMirror()));
 				PacketUtils.send(player, mirrorPacket);
 			}
 		}
 
 		if (line.getInteractEntity() != null) {
-			ClientboundAddEntityPacket interactPacket = new ClientboundAddEntityPacket(line.getInteractEntity());
+			ClientboundAddEntityPacket interactPacket = new ClientboundAddEntityPacket(line.getInteractEntity(), getServerEntity(line.getDisplay()));
 			PacketUtils.send(player, interactPacket);
 
-			ClientboundTeleportEntityPacket teleportEntityPacket2 = new ClientboundTeleportEntityPacket(line.getInteractEntity());
+			ClientboundTeleportEntityPacket teleportEntityPacket2 = new ClientboundTeleportEntityPacket(line.getInteractEntity().getId(), PositionMoveRotation.of(line.getInteractEntity()), Set.of(), line.getInteractEntity().onGround);
 			PacketUtils.send(player, teleportEntityPacket2);
 		}
 	}

@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * An interface which executes code when a player is near a hologram
@@ -39,7 +40,7 @@ public interface PowerUp extends Hologram {
 	 * @param onPickup A consumer that provides the player that picked up the powerup
 	 * @return The Power up instance
 	 */
-	PowerUp onPickup(Consumer<Player> onPickup);
+	PowerUp onPickup(Predicate<Player> onPickup);
 
 	/**
 	 * Sets how far a player should be able to pickup the Power up
