@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Display.BlockDisplay;
 import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Display.TextDisplay;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PositionMoveRotation;
 import net.minecraft.world.entity.ai.behavior.EntityTracker;
@@ -287,12 +288,12 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 		});
 	}
 
-	private ServerEntity getServerEntity(Display display) {
-		return ((ServerLevel) display.level()).getChunkSource().chunkMap.entityMap.get(display).serverEntity;
+	private ClientboundAddEntityPacket getAddEntityPacket(Entity display) {
+		return new ClientboundAddEntityPacket(display, 0, display.blockPosition());
 	}
 
 	public void sendSpawnPacket(Player player, HologramLineImpl line) {
-		ClientboundAddEntityPacket addPacket = new ClientboundAddEntityPacket(line.getDisplay(), getServerEntity(line.getDisplay()));
+		ClientboundAddEntityPacket addPacket = getAddEntityPacket(line.getDisplay());
 		PacketUtils.send(player, addPacket);
 
 		ClientboundTeleportEntityPacket teleportEntityPacket = new ClientboundTeleportEntityPacket(line.getDisplay().getId(), PositionMoveRotation.of(line.getDisplay()), Set.of(), line.getDisplay().onGround);
@@ -300,13 +301,13 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 
 		if (line instanceof TextLineImpl text) {
 			if (text.getMirror() != null) {
-				ClientboundAddEntityPacket mirrorPacket = new ClientboundAddEntityPacket(((TextLineImpl) line).getMirror(), getServerEntity(text.getMirror()));
+				ClientboundAddEntityPacket mirrorPacket = getAddEntityPacket(text.getMirror());
 				PacketUtils.send(player, mirrorPacket);
 			}
 		}
 
 		if (line.getInteractEntity() != null) {
-			ClientboundAddEntityPacket interactPacket = new ClientboundAddEntityPacket(line.getInteractEntity(), getServerEntity(line.getDisplay()));
+			ClientboundAddEntityPacket interactPacket = getAddEntityPacket(line.getInteractEntity());
 			PacketUtils.send(player, interactPacket);
 
 			ClientboundTeleportEntityPacket teleportEntityPacket2 = new ClientboundTeleportEntityPacket(line.getInteractEntity().getId(), PositionMoveRotation.of(line.getInteractEntity()), Set.of(), line.getInteractEntity().onGround);
