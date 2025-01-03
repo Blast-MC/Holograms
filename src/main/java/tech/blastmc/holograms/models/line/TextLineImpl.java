@@ -105,11 +105,11 @@ public class TextLineImpl extends HologramLineImpl implements ConfigurationSeria
 		TextDisplay display = new TextDisplay(EntityType.TEXT_DISPLAY, PacketUtils.toNMS(location.getWorld()));
 		display.setText(PacketUtils.toNMS(text));
 		if (lineWidth != null) {
-			Reflection.MethodInvoker method = Reflection.getMethod(Display.TextDisplay.class, "b", int.class);
+			Reflection.MethodInvoker method = Reflection.getMethod(Display.TextDisplay.class, "setLineWidth", int.class);
 			method.invoke(display, lineWidth.intValue());
 		}
 		if (background != null) {
-			Reflection.MethodInvoker method = Reflection.getMethod(Display.TextDisplay.class, "c", int.class);
+			Reflection.MethodInvoker method = Reflection.getMethod(Display.TextDisplay.class, "setBackgroundColor", int.class);
 			method.invoke(display, background.asARGB());
 		}
 		if (opacity != null)
@@ -151,11 +151,11 @@ public class TextLineImpl extends HologramLineImpl implements ConfigurationSeria
 	private void applyDefaultsToDisplay(Display display, Object... objects) {
 		TextDisplay text = (TextDisplay) display;
 		if (getLineValue(this.lineWidth, (Integer) objects[0]) != null) {
-			Reflection.MethodInvoker method = Reflection.getMethod(TextDisplay.class, "b", int.class);
+			Reflection.MethodInvoker method = Reflection.getMethod(TextDisplay.class, "setLineWidth", int.class);
 			method.invoke(display, getLineValue(this.lineWidth, (Integer) objects[0]).intValue());
 		}
 		if (getLineValue(this.background, (Color) objects[1]) != null) {
-			Reflection.MethodInvoker method = Reflection.getMethod(Display.TextDisplay.class, "c",  int.class);
+			Reflection.MethodInvoker method = Reflection.getMethod(Display.TextDisplay.class, "setBackgroundColor",  int.class);
 			method.invoke(display, getLineValue(this.background, (Color) objects[1]).asARGB());
 		}
 		if (getLineValue(this.opacity, (Byte) objects[2]) != null)
