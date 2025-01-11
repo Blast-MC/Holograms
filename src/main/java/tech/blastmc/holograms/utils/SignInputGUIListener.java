@@ -1,8 +1,14 @@
 package tech.blastmc.holograms.utils;
 
 import gg.projecteden.commands.exceptions.postconfigured.InvalidInputException;
+import gg.projecteden.commands.util.JsonBuilder;
+import io.papermc.paper.adventure.AdventureComponent;
+import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundOpenSignEditorPacket;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.entity.SignText;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
@@ -15,11 +21,9 @@ import tech.blastmc.holograms.utils.protocol.ProtocolManager.PacketListener;
 import tech.blastmc.holograms.utils.protocol.Reflection;
 import tech.blastmc.holograms.utils.protocol.Reflection.FieldAccessor;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class SignInputGUIListener extends PacketListener implements Listener {
 
@@ -83,10 +87,29 @@ public class SignInputGUIListener extends PacketListener implements Listener {
 
 			Location loc = player.getLocation().toBlockLocation().clone();
 			this.location = loc;
-			player.sendBlockChange(loc, Material.OAK_SIGN.createBlockData());
-			player.sendSignChange(loc, lines);
 
-			ClientboundOpenSignEditorPacket openPacket = new ClientboundOpenSignEditorPacket(new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), true);
+			List<Component> lines = Arrays.stream(this.lines)
+				.map(line -> new JsonBuilder(line).build().asComponent())
+				.collect(Collectors.toList());
+
+			while (lines.size() < 4)
+				lines.add(Component.text(""));
+
+			BlockPos pos = new BlockPos(this.location.getBlockX(), this.location.getBlockY(), this.location.getBlockZ());
+
+			SignBlockEntity sign = new SignBlockEntity(pos, Blocks.OAK_SIGN.defaultBlockState());
+			SignText signText = sign.getText(true);
+
+			for (int i = 0; i < lines.size(); i++)
+				signText = signText.setMessage(i, new AdventureComponent(lines.get(i)));
+			sign.setText(signText, true);
+
+			player.sendBlockChange(loc, Material.OAK_SIGN.createBlockData());
+			sign.setLevel(PacketUtils.toNMS(player.getWorld()));
+			PacketUtils.send(player, sign.getUpdatePacket());
+			sign.setLevel(null);
+
+			ClientboundOpenSignEditorPacket openPacket = new ClientboundOpenSignEditorPacket(pos, true);
 			PacketUtils.send(player, openPacket);
 		}
 
