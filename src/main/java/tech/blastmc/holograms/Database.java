@@ -82,7 +82,7 @@ public class Database {
 		String world = hologram.getLocation().getWorld().getName().toLowerCase().replace(" ", "_");
 		worldsMap.getOrDefault(world, new HashSet<>()).remove(hologram);
 
-		if (Strings.isNullOrEmpty(hologram.getId()))
+		if (!hologram.isPersistent() || Strings.isNullOrEmpty(hologram.getId()))
 			return;
 
 		File file = getFile(world, true);
