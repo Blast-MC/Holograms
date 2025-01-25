@@ -97,4 +97,18 @@ public interface HologramLine<T> {
 	 */
 	void setClickListener(Consumer<Player> clickListener);
 
+	void setInteractable(Boolean interactable);
+
+	Boolean getInteractable();
+
+	default boolean isInteractable() {
+		if (this instanceof Offset)
+			return false;
+		if (this.getInteractable() != null && !this.getInteractable())
+			return false;
+		if (this.getInteractable() != null && this.getInteractable())
+			return true;
+		return this.getHologram().getInteractable() != null && this.getHologram().getInteractable();
+	}
+
 }

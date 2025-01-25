@@ -486,11 +486,32 @@ public class GlobalPage extends EditPage {
 				}
 				return get(line.getHologram());
 			}
+		},
+		INTERACTABLE(5, Boolean.class) {
+			@Override
+			public Object get(HologramLine line) {
+				return line.getInteractable();
+			}
+
+			@Override
+			public void apply(HologramLine line, Object data) {
+				line.setInteractable((Boolean) data);
+			}
+
+			@Override
+			public void apply(Hologram hologram, Object data) {
+				hologram.setInteractable((Boolean) data);
+			}
+
+			@Override
+			public Object get(Hologram hologram) {
+				return hologram.getInteractable();
+			}
 		};
 
-		int spacing;
+		final int spacing;
 		@Getter
-		Class<?> type;
+		final Class<?> type;
 
 		GlobalSetting(int spacing, Class<?> type) {
 			this.spacing = spacing;

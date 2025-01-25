@@ -99,7 +99,11 @@ public class Offset implements HologramLine, ConfigurationSerializable {
 	public void setBrightness(Integer blockLight, Integer skyLight) { }
 
 	@Override
-	public void setClickListener(Consumer clickListener) {
+	public void setInteractable(Boolean interactable) { }
 
-	}
+	@Override
+	public Boolean getInteractable() { return null; }
+
+	@Override
+	public void setClickListener(Consumer clickListener) { }
 }

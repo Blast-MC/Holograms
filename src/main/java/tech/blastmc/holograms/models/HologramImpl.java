@@ -97,6 +97,8 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	private Boolean mirror;
 	@Getter
 	private ItemDisplayTransform itemTransform = ItemDisplayTransform.GROUND;
+	@Getter
+	private Boolean interactable;
 
 	Map<UUID, Map<Integer, Object>> playerDataMap = new HashMap<>();
 
@@ -132,6 +134,8 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 			this.mirror = (Boolean) map.get("withMirror");
 		if (map.containsKey("itemTransform"))
 			this.itemTransform = ItemDisplayTransform.valueOf(map.get("itemTransform").toString());
+		if (map.containsKey("interactable"))
+			this.interactable = (Boolean) map.get("interactable");
 
 		this.lines = (ArrayList<HologramLine>) map.getOrDefault("lines", lines);
 	}
@@ -170,6 +174,8 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 				put("withMirror", mirror);
 			if (itemTransform != null && itemTransform != ItemDisplayTransform.GROUND)
 				put("itemTransform", itemTransform.name());
+			if (interactable != null && interactable)
+				put("interactable", interactable);
 			put("lines", lines);
 		}};
 	}
@@ -230,7 +236,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 				}
 				holoLine.applyDefaults(range, billboard, glowColor, itemTransform, lineWidth, background, opacity, shadowed, seeThrough, alignment, mirror);
 
-				if (holoLine.getOnClick() != null) {
+				if (line.isInteractable()) {
 					ArmorStand armorStand = new ArmorStand(EntityType.ARMOR_STAND, PacketUtils.toNMS(loc.getWorld()));
 					armorStand.setInvisible(true);
 					armorStand.setSmall(true);
@@ -532,6 +538,12 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	@Override
 	public void setItemTransform(ItemDisplayTransform transform) {
 		this.itemTransform = transform;
+		update();
+	}
+
+	@Override
+	public void setInteractable(Boolean interactable) {
+		this.interactable = interactable;
 		update();
 	}
 

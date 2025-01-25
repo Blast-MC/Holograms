@@ -33,11 +33,12 @@ public class PlayerListeners implements Listener {
 		HologramsAPI.getHolograms(event.getPlayer().getWorld()).forEach(holo -> {
 			holo.getLines().forEach(line -> {
 				if (!(line instanceof HologramLineImpl impl)) return;
-				if (impl.getOnClick() == null || impl.getInteractEntity() == null) return;
+				if (!impl.isInteractable() || impl.getInteractEntity() == null) return;
 				if (impl.getInteractEntity().getId() != event.getEntityId()) return;
 				if (!Cooldown.of(event.getPlayer()).check("hg-interact-" + event.getEntityId(), 1L)) return;
 				if (!new HologramInteractEvent(event.getPlayer(), impl.getHologram(), line).callEvent()) return;
 
+				if (impl.getOnClick() == null) return;
 				impl.getOnClick().accept(event.getPlayer());
 			});
 		});

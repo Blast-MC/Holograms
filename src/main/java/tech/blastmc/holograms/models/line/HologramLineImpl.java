@@ -17,6 +17,7 @@ import org.bukkit.entity.TextDisplay.TextAlignment;
 import org.jetbrains.annotations.NotNull;
 import tech.blastmc.holograms.api.models.Hologram;
 import tech.blastmc.holograms.api.models.line.HologramLine;
+import tech.blastmc.holograms.api.models.line.Offset;
 import tech.blastmc.holograms.models.HologramImpl;
 
 import java.util.LinkedHashMap;
@@ -38,6 +39,7 @@ public abstract class HologramLineImpl implements HologramLine {
 	private Color glowColor;
 	private Integer blockLight;
 	private Integer skyLight;
+	private Boolean interactable;
 
 	private Consumer<Player> onClick;
 	private Entity interactEntity;
@@ -55,6 +57,8 @@ public abstract class HologramLineImpl implements HologramLine {
 			this.blockLight = Integer.parseInt(map.get("blockLight").toString());
 		if (map.containsKey("skyLight"))
 			this.skyLight = Integer.parseInt(map.get("skyLight").toString());
+		if (map.containsKey("interactable"))
+			this.interactable = Boolean.parseBoolean(map.get("interactable").toString());
 	}
 
 	public @NotNull Map<String, Object> serialize() {
@@ -69,6 +73,8 @@ public abstract class HologramLineImpl implements HologramLine {
 				put("blockLight", blockLight);
 			if (skyLight != null && !skyLight.equals(getHologram().getSkyLight()))
 				put("skyLight", skyLight);
+			if (interactable != null && !interactable.equals(getHologram().getInteractable()))
+				put("interactable", interactable);
 		}};
 	}
 
@@ -103,6 +109,17 @@ public abstract class HologramLineImpl implements HologramLine {
 	public void setClickListener(Consumer clickListener) {
 		this.onClick = clickListener;
 		getHologram().update();
+	}
+
+	@Override
+	public void setInteractable(Boolean interactable) {
+		this.interactable = interactable;
+		getHologram().update();
+	}
+
+	@Override
+	public Boolean getInteractable() {
+		return this.interactable;
 	}
 
 	public abstract void applyTypeDefaults(Object... objects);

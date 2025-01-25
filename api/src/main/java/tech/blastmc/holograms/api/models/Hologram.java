@@ -187,6 +187,10 @@ public interface Hologram {
 
 	Boolean getSeeThrough();
 
+	void setInteractable(Boolean interactable);
+
+	Boolean getInteractable();
+
 	/**
 	 * Gets the {@link HologramLine line objects} for the hologram
 	 * @return A list of line objects for this hologram

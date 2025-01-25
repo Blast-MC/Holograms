@@ -36,6 +36,7 @@ public class HologramBuilderImpl implements HologramBuilder {
 	private TextAlignment alignment = TextAlignment.CENTER;
 	private Boolean withMirror;
 	private ItemDisplayTransform itemTransform = ItemDisplayTransform.GROUND;
+	private Boolean interactable = false;
 
 	@Override
 	public HologramBuilder id(String id) {
@@ -164,6 +165,12 @@ public class HologramBuilderImpl implements HologramBuilder {
 	}
 
 	@Override
+	public HologramBuilder interactable(Boolean interactable) {
+		this.interactable = interactable;
+		return this;
+	}
+
+	@Override
 	public Hologram spawn() {
 		Hologram hologram = build();
 		hologram.spawn();
@@ -182,7 +189,7 @@ public class HologramBuilderImpl implements HologramBuilder {
 		if (idHolo != null)
 			throw new InvalidInputException("IDs must be unique per world");
 
-		HologramImpl holo = new HologramImpl(id, location, persistent, range, shadowRadius, shadowStrength, billboard, glowColor, blockLight, skyLight, null, lineWidth, background, opacity, shadowed, seeThrough, alignment, withMirror, itemTransform,  new HashMap<>());
+		HologramImpl holo = new HologramImpl(id, location, persistent, range, shadowRadius, shadowStrength, billboard, glowColor, blockLight, skyLight, null, lineWidth, background, opacity, shadowed, seeThrough, alignment, withMirror, itemTransform, interactable,  new HashMap<>());
 		holo.setLinesRaw(lines.stream().map(holo::convert).collect(Collectors.toList()));
 		holo.save();
 		return holo;

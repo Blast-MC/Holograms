@@ -174,6 +174,8 @@ public interface HologramBuilder {
 	 */
 	HologramBuilder withMirror();
 
+	HologramBuilder interactable(Boolean interactable);
+
 	/**
 	 * Builds and spawns the hologram in the world
 	 * Use {@link tech.blastmc.holograms.api.events.HologramSpawnEvent HologramSpawnEvent} to cancel showing to a player.
