@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import tech.blastmc.holograms.api.models.line.TextLine;
 import tech.blastmc.holograms.models.HologramImpl;
 import tech.blastmc.holograms.utils.PacketUtils;
+import tech.blastmc.holograms.utils.Percentage;
 import tech.blastmc.holograms.utils.protocol.Reflection;
 
 import java.util.LinkedHashMap;
@@ -135,7 +136,7 @@ public class TextLineImpl extends HologramLineImpl implements ConfigurationSeria
 			}
 		}
 		display.setPos(PacketUtils.toNMS(location));
-		display.setRot(location.getYaw(), 0);
+		display.setRot(location.getYaw(), location.getPitch());
 		return display;
 	}
 
@@ -159,7 +160,7 @@ public class TextLineImpl extends HologramLineImpl implements ConfigurationSeria
 			method.invoke(display, getLineValue(this.background, (Color) objects[1]).asARGB());
 		}
 		if (getLineValue(this.opacity, (Byte) objects[2]) != null)
-			text.setTextOpacity(getLineValue(this.opacity, (Byte) objects[2]));
+			text.setTextOpacity(new Percentage(getLineValue(this.opacity, (Byte) objects[2])).getSignedValue());
 		if (getLineValue(this.shadowed, (Boolean) objects[3]) != null)
 			text.setSharedFlag(TextDisplay.FLAG_SHADOW, getLineValue(this.shadowed, (Boolean) objects[3]));
 		if (getLineValue(this.seeThrough, (Boolean) objects[4]) != null)

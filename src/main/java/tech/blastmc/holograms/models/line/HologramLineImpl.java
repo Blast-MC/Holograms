@@ -17,8 +17,7 @@ import org.bukkit.entity.TextDisplay.TextAlignment;
 import org.jetbrains.annotations.NotNull;
 import tech.blastmc.holograms.api.models.Hologram;
 import tech.blastmc.holograms.api.models.line.HologramLine;
-import tech.blastmc.holograms.api.models.line.Offset;
-import tech.blastmc.holograms.models.HologramImpl;
+import tech.blastmc.holograms.utils.Percentage;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -79,8 +78,8 @@ public abstract class HologramLineImpl implements HologramLine {
 	}
 
 	public void applyDefaults(Float range, Billboard billboard, Color glowColor, ItemDisplayTransform itemTransform,
-	                          Integer lineWidth, Color background, Byte opacity, Boolean shadowed, Boolean seeThrough,
-	                          TextAlignment alignment, Boolean mirror) {
+							  Integer lineWidth, Color background, Byte opacity, Boolean shadowed, Boolean seeThrough,
+							  TextAlignment alignment, Boolean mirror) {
 
 		if (getLineValue(this.range, range) != null)
 			getDisplay().setViewRange(getLineValue(this.range, range));

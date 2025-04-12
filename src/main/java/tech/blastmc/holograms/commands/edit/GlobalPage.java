@@ -17,6 +17,7 @@ import tech.blastmc.holograms.api.models.Hologram;
 import tech.blastmc.holograms.api.models.line.HologramLine;
 import tech.blastmc.holograms.models.line.ItemLineImpl;
 import tech.blastmc.holograms.models.line.TextLineImpl;
+import tech.blastmc.holograms.utils.Percentage;
 import tech.blastmc.holograms.utils.SignInputGUIListener.SignInputGUI;
 import tech.blastmc.holograms.utils.StringUtils;
 
@@ -313,9 +314,10 @@ public class GlobalPage extends EditPage {
 				return get(line.getHologram());
 			}
 		},
-		OPACITY(8, Byte.class) {
+		OPACITY(8, Percentage.class) {
 			@Override
 			public void apply(Hologram hologram, Object data) {
+				Holograms.log("op: " + ((Byte) data));
 				hologram.setOpacity((Byte) data);
 			}
 
@@ -532,6 +534,7 @@ public class GlobalPage extends EditPage {
 			if (data == null || data.isEmpty() || data.isBlank()) {
 				SignInputGUI.of("", "▲▲▲▲▲▲▲", "Input Value", getName())
 					.onFinish((p, lines) -> {
+						Holograms.log(lines[0]);
 						if (Strings.isNullOrEmpty(lines[0])) {
 							future.complete(null);
 							return;
@@ -630,9 +633,26 @@ public class GlobalPage extends EditPage {
 			}
 			if (type == Byte.class) {
 				try {
-					return Byte.parseByte(data);
-				} catch (Exception ignore) {
-					throw new InvalidInputException("Invalid type for Byte: " + data);
+					int value = Integer.parseInt(data);
+					if (value < -128 || value > 127)
+						throw new InvalidInputException("Invalid value for Byte: " + data + ". Expected between -128 and 127");
+					return (byte) value;
+				} catch (Exception ex) {
+					if (ex instanceof InvalidInputException)
+						throw new InvalidInputException(ex.getMessage());
+					throw new InvalidInputException("Invalid type for Percentage: " + data);
+				}
+			}
+			if (type == Percentage.class) {
+				try {
+					int value = Integer.parseInt(data);
+					if (value < 0 || value > 100)
+						throw new InvalidInputException("Invalid value for Percentage: " + data + ". Expected between 0 and 100");
+					return (byte) value;
+				} catch (Exception ex) {
+					if (ex instanceof InvalidInputException)
+						throw new InvalidInputException(ex.getMessage());
+					throw new InvalidInputException("Invalid type for Percentage: " + data);
 				}
 			}
 			if (type == Boolean.class) {

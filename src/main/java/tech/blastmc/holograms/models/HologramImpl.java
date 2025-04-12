@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import net.minecraft.network.protocol.game.*;
-import net.minecraft.server.level.ServerEntity;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Brightness;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Display.BlockDisplay;
@@ -18,10 +16,7 @@ import net.minecraft.world.entity.Display.TextDisplay;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PositionMoveRotation;
-import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.monster.Slime;
-import net.minecraft.world.phys.AABB;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -48,6 +43,7 @@ import tech.blastmc.holograms.models.line.ItemLineImpl;
 import tech.blastmc.holograms.models.line.TextLineImpl;
 import tech.blastmc.holograms.utils.LocationWrapper;
 import tech.blastmc.holograms.utils.PacketUtils;
+import tech.blastmc.holograms.utils.Percentage;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -226,10 +222,9 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 
 				if (holoLine instanceof TextLineImpl text) {
 					text.setMirror(null);
-					if (GlobalSetting.BILLBOARD.get(holoLine) == Billboard.FIXED && GlobalSetting.MIRROR.get(holoLine) != null && ((Boolean) GlobalSetting.MIRROR.get(holoLine))) {
+					if (Arrays.asList(Billboard.FIXED, Billboard.HORIZONTAL).contains((Billboard) GlobalSetting.BILLBOARD.get(holoLine)) && GlobalSetting.MIRROR.get(holoLine) != null && ((Boolean) GlobalSetting.MIRROR.get(holoLine))) {
 						Location mirrorLoc = loc.clone();
 						mirrorLoc.setYaw(mirrorLoc.getYaw() + 180);
-						mirrorLoc.setPitch(-mirrorLoc.getPitch());
 						Display mirrorDisplay = holoLine.render(mirrorLoc);
 						text.setMirror(mirrorDisplay);
 					}
@@ -309,6 +304,10 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 			if (text.getMirror() != null) {
 				ClientboundAddEntityPacket mirrorPacket = getAddEntityPacket(text.getMirror());
 				PacketUtils.send(player, mirrorPacket);
+
+				Display mirror = ((TextLineImpl) line).getMirror();
+				ClientboundTeleportEntityPacket teleportMirrorPacket = new ClientboundTeleportEntityPacket(mirror.getId(), PositionMoveRotation.of(mirror), Set.of(), mirror.onGround);
+				PacketUtils.send(player, teleportMirrorPacket);
 			}
 		}
 

@@ -4,10 +4,10 @@ main: tech.blastmc.holograms.Holograms
 api-version: 1.21
 permissions:
   holograms:
-    default: false
+    default: op
   holograms.*:
     description: Allows all commands for editing holograms
-    default: false
+    default: op
     children:
       holograms.create: true
       holograms.delete: true
@@ -16,18 +16,18 @@ permissions:
       holograms.teleportTo: true
       holograms.moveHere: true
   holograms.create:
-    default: false
+    default: op
   holograms.delete:
-    default: false
+    default: op
   holograms.list:
-    default: false
+    default: op
   holograms.edit:
-    default: false
+    default: op
   holograms.teleportTo:
-    default: false
+    default: op
   holograms.moveHere:
-    default: false
+    default: op
   holograms.shift:
-    default: false
+    default: op
   holograms.convert:
     default: op

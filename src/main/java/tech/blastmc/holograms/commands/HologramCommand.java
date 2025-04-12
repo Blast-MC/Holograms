@@ -234,8 +234,14 @@ public class HologramCommand extends CustomCommand {
 						setting = GlobalSetting.valueOf(args[0].toUpperCase());
 					} catch (Exception ignore) { throw new InvalidInputException("Invalid setting"); }
 					setting.process(player, hologram, data).thenAccept(obj -> {
-						setting.apply(hologram, obj);
+						Holograms.log(setting.name() + ": " + obj);
+						try {
+							setting.apply(hologram, obj);
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
 						hologram.save();
+						Tasks.sync(hologram::update);
 					});
 				}
 			}
