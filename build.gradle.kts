@@ -65,6 +65,7 @@ tasks {
     }
 
     shadowJar {
+        archiveClassifier.set("")
         relocate("org.reflections", "holograms.org.reflections")
         relocate("de.tr7zw", "holograms.de.tr7zw")
     }
