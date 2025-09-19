@@ -3,7 +3,7 @@ plugins {
     `maven-publish`
     id("io.freefair.lombok") version "8.11"
     id("com.gradleup.shadow") version "8.3.0"
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.14"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
 }
 
 allprojects {
@@ -15,7 +15,8 @@ allprojects {
         maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
         maven { url = uri("https://oss.sonatype.org/content/groups/public/") }
         maven { url = uri("https://repo.maven.apache.org/maven2/") }
-        maven { url = uri("https://sonatype.projecteden.gg/repository/maven-public/") }
+        maven { url = uri("https://maven.projecteden.gg/releases") }
+        maven { url = uri("https://maven.projecteden.gg/snapshots") }
         maven { url = uri("https://repo.codemc.org/repository/maven-public/") }
     }
 }
@@ -40,7 +41,7 @@ dependencies {
     implementation("gg.projecteden:commands-api:1.0.0-SNAPSHOT")
     implementation("org.reflections:reflections:0.10.2")
     implementation("de.tr7zw:item-nbt-api:2.14.1")
-    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT", "gg.projecteden.parchment")
+    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT", "gg.projecteden.parchment")
 }
 
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
@@ -55,6 +56,8 @@ tasks {
         options.release.set(21)
         options.compilerArgs.add("-parameters")
     }
+
+    javadoc { options.encoding = Charsets.UTF_8.name() }
 
     processResources {
         filteringCharset = Charsets.UTF_8.name()
