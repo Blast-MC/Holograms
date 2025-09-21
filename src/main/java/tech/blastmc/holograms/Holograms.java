@@ -78,4 +78,16 @@ public final class Holograms extends JavaPlugin implements Listener {
 		INSTANCE.getServer().getPluginManager().registerEvents(listener, INSTANCE);
 	}
 
+	public void reload(World world) {
+		world.getPlayers().forEach(player -> {
+			HologramsAPI.getHolograms(world).forEach(holo -> holo.hideFromPlayer(player));
+		});
+		String worldName = world.getName().toLowerCase().replace(" ", "_");
+		Database.getWorldsMap().remove(worldName);
+		Database.load(world);
+		world.getPlayers().forEach(player -> {
+			HologramsAPI.getHolograms(world).forEach(holo -> holo.showToPlayer(player));
+		});
+	}
+
 }
