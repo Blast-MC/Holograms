@@ -103,7 +103,7 @@ public class HologramCommand extends CustomCommand {
 	}
 
 	@Permission("holograms.edit")
-	@Path("edit <hologram> [action] [context] [extra] [extra] [extra] [--nogui]")
+	@Path("edit <hologram> [action] [context] [extra] [extra...] [--nogui]")
 	void editAction(Hologram hologram, @Arg("gui") EditActions action,
 	                @Arg(context = 2, tabCompleter = HologramData.class) String context,
 					@Arg(context = 3, tabCompleter = HologramExtra.class) String extra1,
@@ -164,6 +164,16 @@ public class HologramCommand extends CustomCommand {
 			e.printStackTrace();
 			error("There was an error while attempting to convert that file");
 		}
+	}
+
+	@Permission("holograms.reload")
+	@Path("reload [--world]")
+	void reload(@Switch World world) {
+		if (world == null)
+			for (World _world : Bukkit.getServer().getWorlds())
+				Holograms.getInstance().reload(_world);
+		else
+			Holograms.getInstance().reload(world);
 	}
 
 	@TabCompleterFor(java.nio.file.Path.class)

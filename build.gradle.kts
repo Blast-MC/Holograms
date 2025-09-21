@@ -28,7 +28,7 @@ subprojects {
     apply(plugin = "maven-publish")
 
     dependencies {
-        compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+        compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     }
 
     java {
@@ -40,7 +40,7 @@ dependencies {
     implementation(project(":HologramsAPI"))
     implementation("gg.projecteden:commands-api:1.0.0-SNAPSHOT")
     implementation("org.reflections:reflections:0.10.2")
-    implementation("de.tr7zw:item-nbt-api:2.14.1")
+    implementation("de.tr7zw:item-nbt-api:2.15.1")
     paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT", "gg.projecteden.parchment")
 }
 
