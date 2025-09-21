@@ -15,7 +15,8 @@ allprojects {
         maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
         maven { url = uri("https://oss.sonatype.org/content/groups/public/") }
         maven { url = uri("https://repo.maven.apache.org/maven2/") }
-        maven { url = uri("https://sonatype.projecteden.gg/repository/maven-public/") }
+        maven { url = uri("https://maven.projecteden.gg/releases") }
+        maven { url = uri("https://maven.projecteden.gg/snapshots") }
         maven { url = uri("https://repo.codemc.org/repository/maven-public/") }
     }
 }
@@ -55,6 +56,8 @@ tasks {
         options.release.set(21)
         options.compilerArgs.add("-parameters")
     }
+
+    javadoc { options.encoding = Charsets.UTF_8.name() }
 
     processResources {
         filteringCharset = Charsets.UTF_8.name()
