@@ -17,6 +17,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import tech.blastmc.holograms.api.models.line.BlockLine;
 import tech.blastmc.holograms.models.HologramImpl;
 import tech.blastmc.holograms.utils.PacketUtils;
@@ -68,10 +69,9 @@ public class BlockLineImpl extends HologramLineImpl implements ConfigurationSeri
 		display.setRot(location.getYaw(), 0);
 
 		Transformation trans = Display.createTransformation(display.getEntityData());
-		Vector3f translation = trans.getTranslation();
-		translation.x -= .5f;
-		translation.z -= .5f;
-		Transformation newTrans = new Transformation(translation, trans.getLeftRotation(), trans.getScale(), trans.getRightRotation());
+		Vector3fc translation = trans.getTranslation();
+		Vector3f mod = new Vector3f(translation.x() - 0.5f, translation.y(), translation.z() - 0.5f);
+		Transformation newTrans = new Transformation(mod, trans.getLeftRotation(), trans.getScale(), trans.getRightRotation());
 		display.setTransformation(newTrans);
 
 		return display;
