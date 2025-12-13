@@ -41,9 +41,9 @@ public abstract class TinyProtocol {
 	private static final AtomicInteger ID = new AtomicInteger(0);
 
 	// Required Minecraft classes
-	private static final Class<?> entityPlayerClass = Reflection.getClass("{nms}.EntityPlayer", "net.minecraft.server.level.EntityPlayer");
-	private static final Class<?> playerConnectionClass = Reflection.getClass("{nms}.PlayerConnection", "net.minecraft.server.network.PlayerConnection");
-	private static final Class<?> networkManagerClass = Reflection.getClass("{nms}.NetworkManager", "net.minecraft.network.NetworkManager");
+	private static final Class<?> entityPlayerClass = Reflection.getClass("{nms}.EntityPlayer", "net.minecraft.server.level.EntityPlayer", "net.minecraft.server.level.ServerPlayer");
+	private static final Class<?> playerConnectionClass = Reflection.getClass("{nms}.PlayerConnection", "net.minecraft.server.network.PlayerConnection", "net.minecraft.server.network.ServerGamePacketListenerImpl");
+	private static final Class<?> networkManagerClass = Reflection.getClass("{nms}.NetworkManager", "net.minecraft.network.NetworkManager", "net.minecraft.network.Connection");
 
 	// Used in order to lookup a channel
 	private static final MethodInvoker getPlayerHandle = Reflection.getMethod("{obc}.entity.CraftPlayer", "getHandle");
@@ -53,12 +53,12 @@ public abstract class TinyProtocol {
 
 	// Looking up ServerConnection
 	private static final Class<Object> minecraftServerClass = Reflection.getUntypedClass("{nms}.MinecraftServer", "net.minecraft.server.MinecraftServer");
-	private static final Class<Object> serverConnectionClass = Reflection.getUntypedClass("{nms}.ServerConnection", "net.minecraft.server.network.ServerConnection");
+	private static final Class<Object> serverConnectionClass = Reflection.getUntypedClass("{nms}.ServerConnection", "net.minecraft.server.network.ServerConnection", "net.minecraft.server.network.ServerConnectionListener");
 	private static final FieldAccessor<Object> getMinecraftServer = Reflection.getField("{obc}.CraftServer", minecraftServerClass, 0);
 	private static final FieldAccessor<Object> getServerConnection = Reflection.getField(minecraftServerClass, serverConnectionClass, 0);
 
 	// Packets we have to intercept
-	private static final Class<?> PACKET_LOGIN_IN_START = Reflection.getClass("{nms}.PacketLoginInStart", "net.minecraft.network.protocol.login.PacketLoginInStart");
+	private static final Class<?> PACKET_LOGIN_IN_START = Reflection.getClass("{nms}.PacketLoginInStart", "net.minecraft.network.protocol.login.PacketLoginInStart", "net.minecraft.network.protocol.login.ServerboundHelloPacket");
 	private static final FieldAccessor<String> getProfileName = Reflection.getField(PACKET_LOGIN_IN_START, String.class, 0);
 
 	// Speedup channel lookup
