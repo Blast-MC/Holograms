@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Display.BlockDisplay;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
@@ -63,15 +63,15 @@ public class BlockLineImpl extends HologramLineImpl implements ConfigurationSeri
 
 	@Override
 	public Display render(Location location) {
-		BlockDisplay display = new BlockDisplay(EntityType.BLOCK_DISPLAY, PacketUtils.toNMS(location.getWorld()));
+		BlockDisplay display = new BlockDisplay(EntityTypes.BLOCK_DISPLAY, PacketUtils.toNMS(location.getWorld()));
 		display.setBlockState(PacketUtils.toNMS(blockData));
 		display.setPos(PacketUtils.toNMS(location));
 		display.setRot(location.getYaw(), 0);
 
 		Transformation trans = Display.createTransformation(display.getEntityData());
-		Vector3fc translation = trans.getTranslation();
+		Vector3fc translation = trans.translation();
 		Vector3f mod = new Vector3f(translation.x() - 0.5f, translation.y(), translation.z() - 0.5f);
-		Transformation newTrans = new Transformation(mod, trans.getLeftRotation(), trans.getScale(), trans.getRightRotation());
+		Transformation newTrans = new Transformation(mod, trans.leftRotation(), trans.scale(), trans.rightRotation());
 		display.setTransformation(newTrans);
 
 		return display;

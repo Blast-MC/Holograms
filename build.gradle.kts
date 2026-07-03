@@ -1,9 +1,9 @@
 plugins {
     java
     `maven-publish`
-    id("io.freefair.lombok") version "8.11"
+    id("io.freefair.lombok") version "9.5.0"
     id("com.gradleup.shadow") version "9.3.0"
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
 }
 
 allprojects {
@@ -28,11 +28,11 @@ subprojects {
     apply(plugin = "maven-publish")
 
     dependencies {
-        compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+        compileOnly("io.papermc.paper:paper-api:26.2.build.46-alpha")
     }
 
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(25))
     }
 }
 
@@ -41,7 +41,7 @@ dependencies {
     implementation("gg.projecteden:commands-api:1.0.0-SNAPSHOT")
     implementation("org.reflections:reflections:0.10.2")
     implementation("de.tr7zw:item-nbt-api:2.15.1")
-    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT", "gg.projecteden.parchment")
+    paperweight.paperDevBundle("26.2-R0.1-SNAPSHOT", "gg.projecteden.parchment")
 }
 
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
@@ -53,7 +53,7 @@ tasks {
 
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(21)
+        options.release.set(25)
         options.compilerArgs.add("-parameters")
     }
 

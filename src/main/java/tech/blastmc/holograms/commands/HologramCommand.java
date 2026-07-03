@@ -31,6 +31,7 @@ import tech.blastmc.holograms.commands.edit.EditPage.Page;
 import tech.blastmc.holograms.commands.edit.GlobalPage.GlobalSetting;
 import tech.blastmc.holograms.commands.edit.GlobalPage.LineSetting;
 import tech.blastmc.holograms.commands.edit.LinePage.TextSetting;
+import tech.blastmc.holograms.dialog.edit.EditDialog;
 import tech.blastmc.holograms.models.HologramBuilderImpl;
 import tech.blastmc.holograms.models.HologramImpl;
 import tech.blastmc.holograms.models.line.BlockLineImpl;
@@ -103,12 +104,17 @@ public class HologramCommand extends CustomCommand {
 	}
 
 	@Permission("holograms.edit")
-	@Path("edit <hologram> [action] [context] [extra] [extra...] [--nogui]")
+	@Path("edit <hologram> [action] [context] [extra] [extra...] [--nogui] [--dialog]")
 	void editAction(Hologram hologram, @Arg("gui") EditActions action,
 	                @Arg(context = 2, tabCompleter = HologramData.class) String context,
 					@Arg(context = 3, tabCompleter = HologramExtra.class) String extra1,
 					@Arg(context = 4, tabCompleter = HologramExtra2.class) String extra2,
-	                @Switch boolean nogui) {
+	                @Switch boolean nogui, @Switch boolean dialog) {
+		if (dialog) {
+			EditDialog.Page.MAIN.open(player(), hologram, 0);
+			return;
+		}
+
 		String data = context;
 		if (extra1 != null)
 			data += " " + extra1;

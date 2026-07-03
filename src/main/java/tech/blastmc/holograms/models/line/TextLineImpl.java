@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Display.TextDisplay;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -103,7 +103,7 @@ public class TextLineImpl extends HologramLineImpl implements ConfigurationSeria
 
 	@Override
 	public Display render(Location location) {
-		TextDisplay display = new TextDisplay(EntityType.TEXT_DISPLAY, PacketUtils.toNMS(location.getWorld()));
+		TextDisplay display = new TextDisplay(EntityTypes.TEXT_DISPLAY, PacketUtils.toNMS(location.getWorld()));
 		display.setText(PacketUtils.toNMS(text));
 		if (lineWidth != null) {
 			Reflection.MethodInvoker method = Reflection.getMethod(Display.TextDisplay.class, "setLineWidth", int.class);

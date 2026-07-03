@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Display.ItemDisplay;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -65,7 +65,7 @@ public class ItemLineImpl extends HologramLineImpl implements ConfigurationSeria
 
 	@Override
 	public Display render(Location location) {
-		ItemDisplay display = new ItemDisplay(EntityType.ITEM_DISPLAY, PacketUtils.toNMS(location.getWorld()));
+		ItemDisplay display = new ItemDisplay(EntityTypes.ITEM_DISPLAY, PacketUtils.toNMS(location.getWorld()));
 		display.setItemStack(PacketUtils.toNMS(item));
 		if (itemTransform != null) {
 			ItemDisplayContext context = switch (itemTransform) {
@@ -82,7 +82,7 @@ public class ItemLineImpl extends HologramLineImpl implements ConfigurationSeria
 		display.setRot(location.getYaw(), 0);
 
 		Transformation trans = Display.createTransformation(display.getEntityData());
-		Transformation newTrans = new Transformation(trans.getTranslation(), trans.getLeftRotation(), null, trans.getRightRotation());
+		Transformation newTrans = new Transformation(trans.translation(), trans.leftRotation(), null, trans.rightRotation());
 		display.setTransformation(newTrans);
 
 		return display;

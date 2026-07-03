@@ -14,7 +14,7 @@ import net.minecraft.world.entity.Display.BlockDisplay;
 import net.minecraft.world.entity.Display.ItemDisplay;
 import net.minecraft.world.entity.Display.TextDisplay;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.PositionMoveRotation;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import org.bukkit.Bukkit;
@@ -232,7 +232,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 				holoLine.applyDefaults(range, billboard, glowColor, itemTransform, lineWidth, background, opacity, shadowed, seeThrough, alignment, mirror);
 
 				if (line.isInteractable()) {
-					ArmorStand armorStand = new ArmorStand(EntityType.ARMOR_STAND, PacketUtils.toNMS(loc.getWorld()));
+					ArmorStand armorStand = new ArmorStand(EntityTypes.ARMOR_STAND, PacketUtils.toNMS(loc.getWorld()));
 					armorStand.setInvisible(true);
 					armorStand.setSmall(true);
 					armorStand.setNoGravity(true);
@@ -363,7 +363,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 	private double getYAdditional(HologramLineImpl line) {
 		Display displayEntity = line.getDisplay();
 		Transformation transformation = Display.createTransformation(displayEntity.getEntityData());
-		float y = transformation.getTranslation().y();
+		float y = transformation.translation().y();
 		float height = 0;
 		if (displayEntity instanceof TextDisplay)
 			height = .3F;
@@ -372,7 +372,7 @@ public class HologramImpl implements ConfigurationSerializable, Hologram {
 		if (displayEntity instanceof BlockDisplay)
 			height = 1.3F;
 
-		y += transformation.getScale().y() * height;
+		y += transformation.scale().y() * height;
 		return y;
 	}
 
